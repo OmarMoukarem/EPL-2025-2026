@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PL Predictions</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    select, input { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    button { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Player Predictions</h1>
+  <label>Player: 
+    <select id="playerSelect">
+      <option value="Omar">Omar</option><option value="Robbie">Robbie</option><option value="Khalil">Khalil</option><option value="Idriss">Idriss</option><option value="Aboudi">Aboudi</option><option value="Masri">Masri</option><option value="Hafez">Hafez</option><option value="Joseph">Joseph</option><option value="Rizk">Rizk</option><option value="Dani">Dani</option>
+    </select>
+  </label>
+  <label>Gameweek:
+    <select id="gwSelect">
+      <option value="1">GW 1</option><option value="2">GW 2</option><option value="3">GW 3</option><option value="4">GW 4</option><option value="5">GW 5</option><option value="6">GW 6</option><option value="7">GW 7</option><option value="8">GW 8</option><option value="9">GW 9</option><option value="10">GW 10</option><option value="11">GW 11</option><option value="12">GW 12</option><option value="13">GW 13</option><option value="14">GW 14</option><option value="15">GW 15</option><option value="16">GW 16</option><option value="17">GW 17</option><option value="18">GW 18</option><option value="19">GW 19</option><option value="20">GW 20</option><option value="21">GW 21</option><option value="22">GW 22</option><option value="23">GW 23</option><option value="24">GW 24</option><option value="25">GW 25</option><option value="26">GW 26</option><option value="27">GW 27</option><option value="28">GW 28</option><option value="29">GW 29</option><option value="30">GW 30</option><option value="31">GW 31</option><option value="32">GW 32</option><option value="33">GW 33</option><option value="34">GW 34</option><option value="35">GW 35</option><option value="36">GW 36</option><option value="37">GW 37</option><option value="38">GW 38</option>
+    </select>
+  </label>
+  <div id="fixtures"></div>
+
+  <script>
+    const fixtures = {1: [('Liverpool', 'AFC Bournemouth'), ('Aston Villa', 'Newcastle United'), ('Brighton & Hove Albion', 'Fulham'), ('Sunderland', 'West Ham United'), ('Tottenham Hotspur', 'Burnley'), ('Wolverhampton Wanderers', 'Manchester City'), ('Chelsea', 'Crystal Palace'), ('Nottingham Forest', 'Brentford'), ('Manchester United', 'Arsenal'), ('Leeds United', 'Everton')]};
+
+    document.getElementById('gwSelect').addEventListener('change', loadFixtures);
+    function loadFixtures() {
+      const gw = parseInt(document.getElementById('gwSelect').value);
+      const fixtureList = fixtures[gw] || [];
+      let html = '<table><tr><th>Home</th><th></th><th>Away</th><th>Predicted Home Score</th><th>Predicted Away Score</th></tr>';
+      fixtureList.forEach(match => {
+        html += `<tr>
+          <td>${match[0]}</td>
+          <td>vs</td>
+          <td>${match[1]}</td>
+          <td><input type='number' min='0'></td>
+          <td><input type='number' min='0'></td>
+        </tr>`;
+      });
+      html += '</table>';
+      document.getElementById('fixtures').innerHTML = html;
+    }
+    loadFixtures();
+  </script>
+</body>
+</html>
