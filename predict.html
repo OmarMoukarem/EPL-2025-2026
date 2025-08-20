@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PL Predictor – Predict</title>
+<style>
+  body{font-family:system-ui,Arial,sans-serif;max-width:900px;margin:30px auto;padding:0 16px;line-height:1.5}
+  header{text-align:center;margin-bottom:16px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:12px 0}
+  select,input[type=number]{padding:6px;border:1px solid #ddd;border-radius:8px}
+  .fixture{display:grid;grid-template-columns:1fr auto auto 1fr;gap:8px;align-items:center;padding:8px;border-bottom:1px dashed #eee}
+  .fixture b{text-align:right}
+  .btn{padding:10px 14px;border-radius:10px;border:1px solid #ddd;background:#fafafa;cursor:pointer}
+  .ok{color:#0a7b2f;font-weight:600}
+  .err{color:#b00020;font-weight:600}
+  small.muted{color:#666}
+</style>
+</head>
+<body>
+<header>
+  <h1>Enter Predictions</h1>
+  <div>Select your <b>name</b> and <b>gameweek</b>. Fill scores for all matches then hit <b>Submit</b>.</div>
+</header>
+
+<div class="controls">
+  <label>Player:
+    <select id="playerSelect"></select>
+  </label>
+  <label>Gameweek:
+    <select id="gwSelect"></select>
+  </label>
+  <button id="saveBtn" class="btn">Submit Predictions</button>
+</div>
+
+<div id="status"></div>
+<div id="fixturesWrap"></div>
+
+<script>
+  // ---- CONFIG ----
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx99lxiy9mAJYMTqeYyvxnNQ2UNnrDq0Zk9gh6mWmACtTmjUsUYipZCEUAw3IeZdHzW/exec
+  const PLAYERS = ['Omar','Robbie','Khalil','Idriss','Aboudi','Masri','Hafez','Joseph','Rizk','Dani'];
+  const FIXTURES = {
+  "1": [
+    {
+      "id": "1-1",
+      "home": "Liverpool",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "1-2",
+      "home": "Aston Villa",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "1-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Fulham"
+    },
+    {
+      "id": "1-4",
+      "home": "Sunderland",
+      "away": "West Ham United"
+    },
+    {
+      "id": "1-5",
+      "home": "Tottenham Hotspur",
+      "away": "Burnley"
+    },
+    {
+      "id": "1-6",
+      "home": "Wolverhampton Wanderers",
+      "away": "Manchester City"
+    },
+    {
+      "id": "1-7",
+      "home": "Chelsea",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "1-8",
+      "home": "Nottingham Forest",
+      "away": "Brentford"
+    },
+    {
+      "id": "1-9",
+      "home": "Manchester United",
+      "away": "Arsenal"
+    },
+    {
+      "id": "1-10",
+      "home": "Leeds United",
+      "away": "Everton"
+    }
+  ],
+  "2": [
+    {
+      "id": "2-1",
+      "home": "West Ham United",
+      "away": "Chelsea"
+    },
+    {
+      "id": "2-2",
+      "home": "Manchester City",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "2-3",
+      "home": "AFC Bournemouth",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "2-4",
+      "home": "Brentford",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "2-5",
+      "home": "Burnley",
+      "away": "Sunderland"
+    },
+    {
+      "id": "2-6",
+      "home": "Arsenal",
+      "away": "Leeds United"
+    },
+    {
+      "id": "2-7",
+      "home": "Crystal Palace",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "2-8",
+      "home": "Everton",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "2-9",
+      "home": "Fulham",
+      "away": "Manchester United"
+    },
+    {
+      "id": "2-10",
+      "home": "Newcastle United",
+      "away": "Liverpool"
+    }
+  ],
+  "3": [
+    {
+      "id": "3-1",
+      "home": "Chelsea",
+      "away": "Fulham"
+    },
+    {
+      "id": "3-2",
+      "home": "Manchester United",
+      "away": "Burnley"
+    },
+    {
+      "id": "3-3",
+      "home": "Sunderland",
+      "away": "Brentford"
+    },
+    {
+      "id": "3-4",
+      "home": "Tottenham Hotspur",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "3-5",
+      "home": "Wolverhampton Wanderers",
+      "away": "Everton"
+    },
+    {
+      "id": "3-6",
+      "home": "Leeds United",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "3-7",
+      "home": "Brighton & Hove Albion",
+      "away": "Manchester City"
+    },
+    {
+      "id": "3-8",
+      "home": "Nottingham Forest",
+      "away": "West Ham United"
+    },
+    {
+      "id": "3-9",
+      "home": "Liverpool",
+      "away": "Arsenal"
+    },
+    {
+      "id": "3-10",
+      "home": "Aston Villa",
+      "away": "Crystal Palace"
+    }
+  ],
+  "4": [
+    {
+      "id": "4-1",
+      "home": "Arsenal",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "4-2",
+      "home": "AFC Bournemouth",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "4-3",
+      "home": "Crystal Palace",
+      "away": "Sunderland"
+    },
+    {
+      "id": "4-4",
+      "home": "Everton",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "4-5",
+      "home": "Fulham",
+      "away": "Leeds United"
+    },
+    {
+      "id": "4-6",
+      "home": "Newcastle United",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "4-7",
+      "home": "West Ham United",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "4-8",
+      "home": "Brentford",
+      "away": "Chelsea"
+    },
+    {
+      "id": "4-9",
+      "home": "Burnley",
+      "away": "Liverpool"
+    },
+    {
+      "id": "4-10",
+      "home": "Manchester City",
+      "away": "Manchester United"
+    }
+  ],
+  "5": [
+    {
+      "id": "5-1",
+      "home": "Liverpool",
+      "away": "Everton"
+    },
+    {
+      "id": "5-2",
+      "home": "AFC Bournemouth",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "5-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "5-4",
+      "home": "Burnley",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "5-5",
+      "home": "West Ham United",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "5-6",
+      "home": "Wolverhampton Wanderers",
+      "away": "Leeds United"
+    },
+    {
+      "id": "5-7",
+      "home": "Manchester United",
+      "away": "Chelsea"
+    },
+    {
+      "id": "5-8",
+      "home": "Fulham",
+      "away": "Brentford"
+    },
+    {
+      "id": "5-9",
+      "home": "Sunderland",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "5-10",
+      "home": "Arsenal",
+      "away": "Manchester City"
+    }
+  ],
+  "6": [
+    {
+      "id": "6-1",
+      "home": "Brentford",
+      "away": "Manchester United"
+    },
+    {
+      "id": "6-2",
+      "home": "Aston Villa",
+      "away": "Fulham"
+    },
+    {
+      "id": "6-3",
+      "home": "Chelsea",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "6-4",
+      "home": "Crystal Palace",
+      "away": "Liverpool"
+    },
+    {
+      "id": "6-5",
+      "home": "Leeds United",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "6-6",
+      "home": "Manchester City",
+      "away": "Burnley"
+    },
+    {
+      "id": "6-7",
+      "home": "Nottingham Forest",
+      "away": "Sunderland"
+    },
+    {
+      "id": "6-8",
+      "home": "Tottenham Hotspur",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "6-9",
+      "home": "Newcastle United",
+      "away": "Arsenal"
+    },
+    {
+      "id": "6-10",
+      "home": "Everton",
+      "away": "West Ham United"
+    }
+  ],
+  "7": [
+    {
+      "id": "7-1",
+      "home": "AFC Bournemouth",
+      "away": "Fulham"
+    },
+    {
+      "id": "7-2",
+      "home": "Arsenal",
+      "away": "West Ham United"
+    },
+    {
+      "id": "7-3",
+      "home": "Aston Villa",
+      "away": "Burnley"
+    },
+    {
+      "id": "7-4",
+      "home": "Brentford",
+      "away": "Manchester City"
+    },
+    {
+      "id": "7-5",
+      "home": "Chelsea",
+      "away": "Liverpool"
+    },
+    {
+      "id": "7-6",
+      "home": "Everton",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "7-7",
+      "home": "Leeds United",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "7-8",
+      "home": "Manchester United",
+      "away": "Sunderland"
+    },
+    {
+      "id": "7-9",
+      "home": "Newcastle United",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "7-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Brighton & Hove Albion"
+    }
+  ],
+  "8": [
+    {
+      "id": "8-1",
+      "home": "Brighton & Hove Albion",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "8-2",
+      "home": "Burnley",
+      "away": "Leeds United"
+    },
+    {
+      "id": "8-3",
+      "home": "Crystal Palace",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "8-4",
+      "home": "Fulham",
+      "away": "Arsenal"
+    },
+    {
+      "id": "8-5",
+      "home": "Liverpool",
+      "away": "Manchester United"
+    },
+    {
+      "id": "8-6",
+      "home": "Manchester City",
+      "away": "Everton"
+    },
+    {
+      "id": "8-7",
+      "home": "Nottingham Forest",
+      "away": "Chelsea"
+    },
+    {
+      "id": "8-8",
+      "home": "Sunderland",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "8-9",
+      "home": "Tottenham Hotspur",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "8-10",
+      "home": "West Ham United",
+      "away": "Brentford"
+    }
+  ],
+  "9": [
+    {
+      "id": "9-1",
+      "home": "AFC Bournemouth",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "9-2",
+      "home": "Arsenal",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "9-3",
+      "home": "Aston Villa",
+      "away": "Manchester City"
+    },
+    {
+      "id": "9-4",
+      "home": "Brentford",
+      "away": "Liverpool"
+    },
+    {
+      "id": "9-5",
+      "home": "Chelsea",
+      "away": "Sunderland"
+    },
+    {
+      "id": "9-6",
+      "home": "Everton",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "9-7",
+      "home": "Leeds United",
+      "away": "West Ham United"
+    },
+    {
+      "id": "9-8",
+      "home": "Manchester United",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "9-9",
+      "home": "Newcastle United",
+      "away": "Fulham"
+    },
+    {
+      "id": "9-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Burnley"
+    }
+  ],
+  "10": [
+    {
+      "id": "10-1",
+      "home": "Brighton & Hove Albion",
+      "away": "Leeds United"
+    },
+    {
+      "id": "10-2",
+      "home": "Burnley",
+      "away": "Arsenal"
+    },
+    {
+      "id": "10-3",
+      "home": "Crystal Palace",
+      "away": "Brentford"
+    },
+    {
+      "id": "10-4",
+      "home": "Fulham",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "10-5",
+      "home": "Liverpool",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "10-6",
+      "home": "Manchester City",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "10-7",
+      "home": "Nottingham Forest",
+      "away": "Manchester United"
+    },
+    {
+      "id": "10-8",
+      "home": "Sunderland",
+      "away": "Everton"
+    },
+    {
+      "id": "10-9",
+      "home": "Tottenham Hotspur",
+      "away": "Chelsea"
+    },
+    {
+      "id": "10-10",
+      "home": "West Ham United",
+      "away": "Newcastle United"
+    }
+  ],
+  "11": [
+    {
+      "id": "11-1",
+      "home": "Aston Villa",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "11-2",
+      "home": "Brentford",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "11-3",
+      "home": "Chelsea",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "11-4",
+      "home": "Crystal Palace",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "11-5",
+      "home": "Everton",
+      "away": "Fulham"
+    },
+    {
+      "id": "11-6",
+      "home": "Manchester City",
+      "away": "Liverpool"
+    },
+    {
+      "id": "11-7",
+      "home": "Nottingham Forest",
+      "away": "Leeds United"
+    },
+    {
+      "id": "11-8",
+      "home": "Sunderland",
+      "away": "Arsenal"
+    },
+    {
+      "id": "11-9",
+      "home": "Tottenham Hotspur",
+      "away": "Manchester United"
+    },
+    {
+      "id": "11-10",
+      "home": "West Ham United",
+      "away": "Burnley"
+    }
+  ],
+  "12": [
+    {
+      "id": "12-1",
+      "home": "AFC Bournemouth",
+      "away": "West Ham United"
+    },
+    {
+      "id": "12-2",
+      "home": "Arsenal",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "12-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Brentford"
+    },
+    {
+      "id": "12-4",
+      "home": "Burnley",
+      "away": "Chelsea"
+    },
+    {
+      "id": "12-5",
+      "home": "Fulham",
+      "away": "Sunderland"
+    },
+    {
+      "id": "12-6",
+      "home": "Leeds United",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "12-7",
+      "home": "Liverpool",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "12-8",
+      "home": "Manchester United",
+      "away": "Everton"
+    },
+    {
+      "id": "12-9",
+      "home": "Newcastle United",
+      "away": "Manchester City"
+    },
+    {
+      "id": "12-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Crystal Palace"
+    }
+  ],
+  "13": [
+    {
+      "id": "13-1",
+      "home": "Aston Villa",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "13-2",
+      "home": "Brentford",
+      "away": "Burnley"
+    },
+    {
+      "id": "13-3",
+      "home": "Chelsea",
+      "away": "Arsenal"
+    },
+    {
+      "id": "13-4",
+      "home": "Crystal Palace",
+      "away": "Manchester United"
+    },
+    {
+      "id": "13-5",
+      "home": "Everton",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "13-6",
+      "home": "Manchester City",
+      "away": "Leeds United"
+    },
+    {
+      "id": "13-7",
+      "home": "Nottingham Forest",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "13-8",
+      "home": "Sunderland",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "13-9",
+      "home": "Tottenham Hotspur",
+      "away": "Fulham"
+    },
+    {
+      "id": "13-10",
+      "home": "West Ham United",
+      "away": "Liverpool"
+    }
+  ],
+  "14": [
+    {
+      "id": "14-1",
+      "home": "AFC Bournemouth",
+      "away": "Everton"
+    },
+    {
+      "id": "14-2",
+      "home": "Arsenal",
+      "away": "Brentford"
+    },
+    {
+      "id": "14-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "14-4",
+      "home": "Burnley",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "14-5",
+      "home": "Fulham",
+      "away": "Manchester City"
+    },
+    {
+      "id": "14-6",
+      "home": "Leeds United",
+      "away": "Chelsea"
+    },
+    {
+      "id": "14-7",
+      "home": "Liverpool",
+      "away": "Sunderland"
+    },
+    {
+      "id": "14-8",
+      "home": "Manchester United",
+      "away": "West Ham United"
+    },
+    {
+      "id": "14-9",
+      "home": "Newcastle United",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "14-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Nottingham Forest"
+    }
+  ],
+  "15": [
+    {
+      "id": "15-1",
+      "home": "AFC Bournemouth",
+      "away": "Chelsea"
+    },
+    {
+      "id": "15-2",
+      "home": "Aston Villa",
+      "away": "Arsenal"
+    },
+    {
+      "id": "15-3",
+      "home": "Brighton & Hove Albion",
+      "away": "West Ham United"
+    },
+    {
+      "id": "15-4",
+      "home": "Everton",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "15-5",
+      "home": "Fulham",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "15-6",
+      "home": "Leeds United",
+      "away": "Liverpool"
+    },
+    {
+      "id": "15-7",
+      "home": "Manchester City",
+      "away": "Sunderland"
+    },
+    {
+      "id": "15-8",
+      "home": "Newcastle United",
+      "away": "Burnley"
+    },
+    {
+      "id": "15-9",
+      "home": "Tottenham Hotspur",
+      "away": "Brentford"
+    },
+    {
+      "id": "15-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Manchester United"
+    }
+  ],
+  "16": [
+    {
+      "id": "16-1",
+      "home": "Arsenal",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "16-2",
+      "home": "Brentford",
+      "away": "Leeds United"
+    },
+    {
+      "id": "16-3",
+      "home": "Burnley",
+      "away": "Fulham"
+    },
+    {
+      "id": "16-4",
+      "home": "Chelsea",
+      "away": "Everton"
+    },
+    {
+      "id": "16-5",
+      "home": "Crystal Palace",
+      "away": "Manchester City"
+    },
+    {
+      "id": "16-6",
+      "home": "Liverpool",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "16-7",
+      "home": "Manchester United",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "16-8",
+      "home": "Nottingham Forest",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "16-9",
+      "home": "Sunderland",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "16-10",
+      "home": "West Ham United",
+      "away": "Aston Villa"
+    }
+  ],
+  "17": [
+    {
+      "id": "17-1",
+      "home": "AFC Bournemouth",
+      "away": "Burnley"
+    },
+    {
+      "id": "17-2",
+      "home": "Aston Villa",
+      "away": "Manchester United"
+    },
+    {
+      "id": "17-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Sunderland"
+    },
+    {
+      "id": "17-4",
+      "home": "Everton",
+      "away": "Arsenal"
+    },
+    {
+      "id": "17-5",
+      "home": "Fulham",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "17-6",
+      "home": "Leeds United",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "17-7",
+      "home": "Manchester City",
+      "away": "West Ham United"
+    },
+    {
+      "id": "17-8",
+      "home": "Newcastle United",
+      "away": "Chelsea"
+    },
+    {
+      "id": "17-9",
+      "home": "Tottenham Hotspur",
+      "away": "Liverpool"
+    },
+    {
+      "id": "17-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Brentford"
+    }
+  ],
+  "18": [
+    {
+      "id": "18-1",
+      "home": "Arsenal",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "18-2",
+      "home": "Brentford",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "18-3",
+      "home": "Burnley",
+      "away": "Everton"
+    },
+    {
+      "id": "18-4",
+      "home": "Chelsea",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "18-5",
+      "home": "Crystal Palace",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "18-6",
+      "home": "Liverpool",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "18-7",
+      "home": "Manchester United",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "18-8",
+      "home": "Nottingham Forest",
+      "away": "Manchester City"
+    },
+    {
+      "id": "18-9",
+      "home": "Sunderland",
+      "away": "Leeds United"
+    },
+    {
+      "id": "18-10",
+      "home": "West Ham United",
+      "away": "Fulham"
+    }
+  ],
+  "19": [
+    {
+      "id": "19-1",
+      "home": "Arsenal",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "19-2",
+      "home": "Brentford",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "19-3",
+      "home": "Burnley",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "19-4",
+      "home": "Chelsea",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "19-5",
+      "home": "Crystal Palace",
+      "away": "Fulham"
+    },
+    {
+      "id": "19-6",
+      "home": "Liverpool",
+      "away": "Leeds United"
+    },
+    {
+      "id": "19-7",
+      "home": "Manchester United",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "19-8",
+      "home": "Nottingham Forest",
+      "away": "Everton"
+    },
+    {
+      "id": "19-9",
+      "home": "Sunderland",
+      "away": "Manchester City"
+    },
+    {
+      "id": "19-10",
+      "home": "West Ham United",
+      "away": "Brighton & Hove Albion"
+    }
+  ],
+  "20": [
+    {
+      "id": "20-1",
+      "home": "AFC Bournemouth",
+      "away": "Arsenal"
+    },
+    {
+      "id": "20-2",
+      "home": "Aston Villa",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "20-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Burnley"
+    },
+    {
+      "id": "20-4",
+      "home": "Everton",
+      "away": "Brentford"
+    },
+    {
+      "id": "20-5",
+      "home": "Fulham",
+      "away": "Liverpool"
+    },
+    {
+      "id": "20-6",
+      "home": "Leeds United",
+      "away": "Manchester United"
+    },
+    {
+      "id": "20-7",
+      "home": "Manchester City",
+      "away": "Chelsea"
+    },
+    {
+      "id": "20-8",
+      "home": "Newcastle United",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "20-9",
+      "home": "Tottenham Hotspur",
+      "away": "Sunderland"
+    },
+    {
+      "id": "20-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "West Ham United"
+    }
+  ],
+  "21": [
+    {
+      "id": "21-1",
+      "home": "AFC Bournemouth",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "21-2",
+      "home": "Arsenal",
+      "away": "Liverpool"
+    },
+    {
+      "id": "21-3",
+      "home": "Brentford",
+      "away": "Sunderland"
+    },
+    {
+      "id": "21-4",
+      "home": "Burnley",
+      "away": "Manchester United"
+    },
+    {
+      "id": "21-5",
+      "home": "Crystal Palace",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "21-6",
+      "home": "Everton",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "21-7",
+      "home": "Fulham",
+      "away": "Chelsea"
+    },
+    {
+      "id": "21-8",
+      "home": "Manchester City",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "21-9",
+      "home": "Newcastle United",
+      "away": "Leeds United"
+    },
+    {
+      "id": "21-10",
+      "home": "West Ham United",
+      "away": "Nottingham Forest"
+    }
+  ],
+  "22": [
+    {
+      "id": "22-1",
+      "home": "Aston Villa",
+      "away": "Everton"
+    },
+    {
+      "id": "22-2",
+      "home": "Brighton & Hove Albion",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "22-3",
+      "home": "Chelsea",
+      "away": "Brentford"
+    },
+    {
+      "id": "22-4",
+      "home": "Leeds United",
+      "away": "Fulham"
+    },
+    {
+      "id": "22-5",
+      "home": "Liverpool",
+      "away": "Burnley"
+    },
+    {
+      "id": "22-6",
+      "home": "Manchester United",
+      "away": "Manchester City"
+    },
+    {
+      "id": "22-7",
+      "home": "Nottingham Forest",
+      "away": "Arsenal"
+    },
+    {
+      "id": "22-8",
+      "home": "Sunderland",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "22-9",
+      "home": "Tottenham Hotspur",
+      "away": "West Ham United"
+    },
+    {
+      "id": "22-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Newcastle United"
+    }
+  ],
+  "23": [
+    {
+      "id": "23-1",
+      "home": "AFC Bournemouth",
+      "away": "Liverpool"
+    },
+    {
+      "id": "23-2",
+      "home": "Arsenal",
+      "away": "Manchester United"
+    },
+    {
+      "id": "23-3",
+      "home": "Brentford",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "23-4",
+      "home": "Burnley",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "23-5",
+      "home": "Crystal Palace",
+      "away": "Chelsea"
+    },
+    {
+      "id": "23-6",
+      "home": "Everton",
+      "away": "Leeds United"
+    },
+    {
+      "id": "23-7",
+      "home": "Fulham",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "23-8",
+      "home": "Manchester City",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "23-9",
+      "home": "Newcastle United",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "23-10",
+      "home": "West Ham United",
+      "away": "Sunderland"
+    }
+  ],
+  "24": [
+    {
+      "id": "24-1",
+      "home": "Aston Villa",
+      "away": "Brentford"
+    },
+    {
+      "id": "24-2",
+      "home": "Brighton & Hove Albion",
+      "away": "Everton"
+    },
+    {
+      "id": "24-3",
+      "home": "Chelsea",
+      "away": "West Ham United"
+    },
+    {
+      "id": "24-4",
+      "home": "Leeds United",
+      "away": "Arsenal"
+    },
+    {
+      "id": "24-5",
+      "home": "Liverpool",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "24-6",
+      "home": "Manchester United",
+      "away": "Fulham"
+    },
+    {
+      "id": "24-7",
+      "home": "Nottingham Forest",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "24-8",
+      "home": "Sunderland",
+      "away": "Burnley"
+    },
+    {
+      "id": "24-9",
+      "home": "Tottenham Hotspur",
+      "away": "Manchester City"
+    },
+    {
+      "id": "24-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "AFC Bournemouth"
+    }
+  ],
+  "25": [
+    {
+      "id": "25-1",
+      "home": "AFC Bournemouth",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "25-2",
+      "home": "Arsenal",
+      "away": "Sunderland"
+    },
+    {
+      "id": "25-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "25-4",
+      "home": "Burnley",
+      "away": "West Ham United"
+    },
+    {
+      "id": "25-5",
+      "home": "Fulham",
+      "away": "Everton"
+    },
+    {
+      "id": "25-6",
+      "home": "Leeds United",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "25-7",
+      "home": "Liverpool",
+      "away": "Manchester City"
+    },
+    {
+      "id": "25-8",
+      "home": "Manchester United",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "25-9",
+      "home": "Newcastle United",
+      "away": "Brentford"
+    },
+    {
+      "id": "25-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Chelsea"
+    }
+  ],
+  "26": [
+    {
+      "id": "26-1",
+      "home": "Aston Villa",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "26-2",
+      "home": "Brentford",
+      "away": "Arsenal"
+    },
+    {
+      "id": "26-3",
+      "home": "Chelsea",
+      "away": "Leeds United"
+    },
+    {
+      "id": "26-4",
+      "home": "Crystal Palace",
+      "away": "Burnley"
+    },
+    {
+      "id": "26-5",
+      "home": "Everton",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "26-6",
+      "home": "Manchester City",
+      "away": "Fulham"
+    },
+    {
+      "id": "26-7",
+      "home": "Nottingham Forest",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "26-8",
+      "home": "Sunderland",
+      "away": "Liverpool"
+    },
+    {
+      "id": "26-9",
+      "home": "Tottenham Hotspur",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "26-10",
+      "home": "West Ham United",
+      "away": "Manchester United"
+    }
+  ],
+  "27": [
+    {
+      "id": "27-1",
+      "home": "Aston Villa",
+      "away": "Leeds United"
+    },
+    {
+      "id": "27-2",
+      "home": "Brentford",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "27-3",
+      "home": "Chelsea",
+      "away": "Burnley"
+    },
+    {
+      "id": "27-4",
+      "home": "Crystal Palace",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "27-5",
+      "home": "Everton",
+      "away": "Manchester United"
+    },
+    {
+      "id": "27-6",
+      "home": "Manchester City",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "27-7",
+      "home": "Nottingham Forest",
+      "away": "Liverpool"
+    },
+    {
+      "id": "27-8",
+      "home": "Sunderland",
+      "away": "Fulham"
+    },
+    {
+      "id": "27-9",
+      "home": "Tottenham Hotspur",
+      "away": "Arsenal"
+    },
+    {
+      "id": "27-10",
+      "home": "West Ham United",
+      "away": "AFC Bournemouth"
+    }
+  ],
+  "28": [
+    {
+      "id": "28-1",
+      "home": "AFC Bournemouth",
+      "away": "Sunderland"
+    },
+    {
+      "id": "28-2",
+      "home": "Arsenal",
+      "away": "Chelsea"
+    },
+    {
+      "id": "28-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "28-4",
+      "home": "Burnley",
+      "away": "Brentford"
+    },
+    {
+      "id": "28-5",
+      "home": "Fulham",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "28-6",
+      "home": "Leeds United",
+      "away": "Manchester City"
+    },
+    {
+      "id": "28-7",
+      "home": "Liverpool",
+      "away": "West Ham United"
+    },
+    {
+      "id": "28-8",
+      "home": "Manchester United",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "28-9",
+      "home": "Newcastle United",
+      "away": "Everton"
+    },
+    {
+      "id": "28-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Aston Villa"
+    }
+  ],
+  "29": [
+    {
+      "id": "29-1",
+      "home": "AFC Bournemouth",
+      "away": "Brentford"
+    },
+    {
+      "id": "29-2",
+      "home": "Aston Villa",
+      "away": "Chelsea"
+    },
+    {
+      "id": "29-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Arsenal"
+    },
+    {
+      "id": "29-4",
+      "home": "Everton",
+      "away": "Burnley"
+    },
+    {
+      "id": "29-5",
+      "home": "Fulham",
+      "away": "West Ham United"
+    },
+    {
+      "id": "29-6",
+      "home": "Leeds United",
+      "away": "Sunderland"
+    },
+    {
+      "id": "29-7",
+      "home": "Manchester City",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "29-8",
+      "home": "Newcastle United",
+      "away": "Manchester United"
+    },
+    {
+      "id": "29-9",
+      "home": "Tottenham Hotspur",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "29-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Liverpool"
+    }
+  ],
+  "30": [
+    {
+      "id": "30-1",
+      "home": "Arsenal",
+      "away": "Everton"
+    },
+    {
+      "id": "30-2",
+      "home": "Brentford",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "30-3",
+      "home": "Burnley",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "30-4",
+      "home": "Chelsea",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "30-5",
+      "home": "Crystal Palace",
+      "away": "Leeds United"
+    },
+    {
+      "id": "30-6",
+      "home": "Liverpool",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "30-7",
+      "home": "Manchester United",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "30-8",
+      "home": "Nottingham Forest",
+      "away": "Fulham"
+    },
+    {
+      "id": "30-9",
+      "home": "Sunderland",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "30-10",
+      "home": "West Ham United",
+      "away": "Manchester City"
+    }
+  ],
+  "31": [
+    {
+      "id": "31-1",
+      "home": "AFC Bournemouth",
+      "away": "Manchester United"
+    },
+    {
+      "id": "31-2",
+      "home": "Aston Villa",
+      "away": "West Ham United"
+    },
+    {
+      "id": "31-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Liverpool"
+    },
+    {
+      "id": "31-4",
+      "home": "Everton",
+      "away": "Chelsea"
+    },
+    {
+      "id": "31-5",
+      "home": "Fulham",
+      "away": "Burnley"
+    },
+    {
+      "id": "31-6",
+      "home": "Leeds United",
+      "away": "Brentford"
+    },
+    {
+      "id": "31-7",
+      "home": "Manchester City",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "31-8",
+      "home": "Newcastle United",
+      "away": "Sunderland"
+    },
+    {
+      "id": "31-9",
+      "home": "Tottenham Hotspur",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "31-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Arsenal"
+    }
+  ],
+  "32": [
+    {
+      "id": "32-1",
+      "home": "Arsenal",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "32-2",
+      "home": "Brentford",
+      "away": "Everton"
+    },
+    {
+      "id": "32-3",
+      "home": "Burnley",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "32-4",
+      "home": "Chelsea",
+      "away": "Manchester City"
+    },
+    {
+      "id": "32-5",
+      "home": "Crystal Palace",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "32-6",
+      "home": "Liverpool",
+      "away": "Fulham"
+    },
+    {
+      "id": "32-7",
+      "home": "Manchester United",
+      "away": "Leeds United"
+    },
+    {
+      "id": "32-8",
+      "home": "Nottingham Forest",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "32-9",
+      "home": "Sunderland",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "32-10",
+      "home": "West Ham United",
+      "away": "Wolverhampton Wanderers"
+    }
+  ],
+  "33": [
+    {
+      "id": "33-1",
+      "home": "Aston Villa",
+      "away": "Sunderland"
+    },
+    {
+      "id": "33-2",
+      "home": "Brentford",
+      "away": "Fulham"
+    },
+    {
+      "id": "33-3",
+      "home": "Chelsea",
+      "away": "Manchester United"
+    },
+    {
+      "id": "33-4",
+      "home": "Crystal Palace",
+      "away": "West Ham United"
+    },
+    {
+      "id": "33-5",
+      "home": "Everton",
+      "away": "Liverpool"
+    },
+    {
+      "id": "33-6",
+      "home": "Leeds United",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "33-7",
+      "home": "Manchester City",
+      "away": "Arsenal"
+    },
+    {
+      "id": "33-8",
+      "home": "Newcastle United",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "33-9",
+      "home": "Nottingham Forest",
+      "away": "Burnley"
+    },
+    {
+      "id": "33-10",
+      "home": "Tottenham Hotspur",
+      "away": "Brighton & Hove Albion"
+    }
+  ],
+  "34": [
+    {
+      "id": "34-1",
+      "home": "AFC Bournemouth",
+      "away": "Leeds United"
+    },
+    {
+      "id": "34-2",
+      "home": "Arsenal",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "34-3",
+      "home": "Brighton & Hove Albion",
+      "away": "Chelsea"
+    },
+    {
+      "id": "34-4",
+      "home": "Burnley",
+      "away": "Manchester City"
+    },
+    {
+      "id": "34-5",
+      "home": "Fulham",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "34-6",
+      "home": "Liverpool",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "34-7",
+      "home": "Manchester United",
+      "away": "Brentford"
+    },
+    {
+      "id": "34-8",
+      "home": "Sunderland",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "34-9",
+      "home": "West Ham United",
+      "away": "Everton"
+    },
+    {
+      "id": "34-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Tottenham Hotspur"
+    }
+  ],
+  "35": [
+    {
+      "id": "35-1",
+      "home": "AFC Bournemouth",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "35-2",
+      "home": "Arsenal",
+      "away": "Fulham"
+    },
+    {
+      "id": "35-3",
+      "home": "Aston Villa",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "35-4",
+      "home": "Brentford",
+      "away": "West Ham United"
+    },
+    {
+      "id": "35-5",
+      "home": "Chelsea",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "35-6",
+      "home": "Everton",
+      "away": "Manchester City"
+    },
+    {
+      "id": "35-7",
+      "home": "Leeds United",
+      "away": "Burnley"
+    },
+    {
+      "id": "35-8",
+      "home": "Manchester United",
+      "away": "Liverpool"
+    },
+    {
+      "id": "35-9",
+      "home": "Newcastle United",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "35-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Sunderland"
+    }
+  ],
+  "36": [
+    {
+      "id": "36-1",
+      "home": "Brighton & Hove Albion",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "36-2",
+      "home": "Burnley",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "36-3",
+      "home": "Crystal Palace",
+      "away": "Everton"
+    },
+    {
+      "id": "36-4",
+      "home": "Fulham",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "36-5",
+      "home": "Liverpool",
+      "away": "Chelsea"
+    },
+    {
+      "id": "36-6",
+      "home": "Manchester City",
+      "away": "Brentford"
+    },
+    {
+      "id": "36-7",
+      "home": "Nottingham Forest",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "36-8",
+      "home": "Sunderland",
+      "away": "Manchester United"
+    },
+    {
+      "id": "36-9",
+      "home": "Tottenham Hotspur",
+      "away": "Leeds United"
+    },
+    {
+      "id": "36-10",
+      "home": "West Ham United",
+      "away": "Arsenal"
+    }
+  ],
+  "37": [
+    {
+      "id": "37-1",
+      "home": "AFC Bournemouth",
+      "away": "Manchester City"
+    },
+    {
+      "id": "37-2",
+      "home": "Arsenal",
+      "away": "Burnley"
+    },
+    {
+      "id": "37-3",
+      "home": "Aston Villa",
+      "away": "Liverpool"
+    },
+    {
+      "id": "37-4",
+      "home": "Brentford",
+      "away": "Crystal Palace"
+    },
+    {
+      "id": "37-5",
+      "home": "Chelsea",
+      "away": "Tottenham Hotspur"
+    },
+    {
+      "id": "37-6",
+      "home": "Everton",
+      "away": "Sunderland"
+    },
+    {
+      "id": "37-7",
+      "home": "Leeds United",
+      "away": "Brighton & Hove Albion"
+    },
+    {
+      "id": "37-8",
+      "home": "Manchester United",
+      "away": "Nottingham Forest"
+    },
+    {
+      "id": "37-9",
+      "home": "Newcastle United",
+      "away": "West Ham United"
+    },
+    {
+      "id": "37-10",
+      "home": "Wolverhampton Wanderers",
+      "away": "Fulham"
+    }
+  ],
+  "38": [
+    {
+      "id": "38-1",
+      "home": "Brighton & Hove Albion",
+      "away": "Manchester United"
+    },
+    {
+      "id": "38-2",
+      "home": "Burnley",
+      "away": "Wolverhampton Wanderers"
+    },
+    {
+      "id": "38-3",
+      "home": "Crystal Palace",
+      "away": "Arsenal"
+    },
+    {
+      "id": "38-4",
+      "home": "Fulham",
+      "away": "Newcastle United"
+    },
+    {
+      "id": "38-5",
+      "home": "Liverpool",
+      "away": "Brentford"
+    },
+    {
+      "id": "38-6",
+      "home": "Manchester City",
+      "away": "Aston Villa"
+    },
+    {
+      "id": "38-7",
+      "home": "Nottingham Forest",
+      "away": "AFC Bournemouth"
+    },
+    {
+      "id": "38-8",
+      "home": "Sunderland",
+      "away": "Chelsea"
+    },
+    {
+      "id": "38-9",
+      "home": "Tottenham Hotspur",
+      "away": "Everton"
+    },
+    {
+      "id": "38-10",
+      "home": "West Ham United",
+      "away": "Leeds United"
+    }
+  ]
+};
+
+  // ---- UI ----
+  let currentPlayer = PLAYERS[0];
+  let currentGW = 1;
+
+  function populateDropdowns(){
+    const ps = document.getElementById('playerSelect');
+    ps.innerHTML = PLAYERS.map(p=>`<option value="${p}">${p}</option>`).join('');
+    ps.value = currentPlayer;
+    ps.addEventListener('change',()=>{ saveLocally(); currentPlayer = ps.value; renderFixtures(); loadLocally(); });
+
+    const gs = document.getElementById('gwSelect');
+    gs.innerHTML = Array.from({length:38}, (_,i)=>i+1).map(g=>`<option value="${g}">GW ${g}</option>`).join('');
+    gs.value = currentGW;
+    gs.addEventListener('change',()=>{ saveLocally(); currentGW = parseInt(gs.value,10); renderFixtures(); loadLocally(); });
+  }
+
+  function keyFor(player, gw){ return `pred_${player}_${gw}`; }
+
+  function renderFixtures(){
+    const wrap = document.getElementById('fixturesWrap');
+    wrap.innerHTML = '';
+    const list = (FIXTURES[String(currentGW)]||[]);
+    list.forEach((m,idx)=>{
+      const row = document.createElement('div');
+      row.className='fixture';
+      row.innerHTML = `
+        <b>${m.home}</b>
+        <input type="number" min="0" data-match="${m.id}" data-side="h" placeholder="0" />
+        <input type="number" min="0" data-match="${m.id}" data-side="a" placeholder="0" />
+        <b style="text-align:left">${m.away}</b>
+      `;
+      wrap.appendChild(row);
+    });
+  }
+
+  function loadLocally(){
+    try{
+      const raw = localStorage.getItem(keyFor(currentPlayer,currentGW));
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      for(const m of (FIXTURES[String(currentGW)]||[])){
+        const h = document.querySelector(`input[data-match="${m.id}"][data-side="h"]`);
+        const a = document.querySelector(`input[data-match="${m.id}"][data-side="a"]`);
+        if(h && data[m.id]) h.value = data[m.id].ph ?? '';
+        if(a && data[m.id]) a.value = data[m.id].pa ?? '';
+      }
+    }catch(e){ console.warn(e); }
+  }
+
+  function saveLocally(){
+    const data = {}
+    for(const m of (FIXTURES[String(currentGW)]||[])){
+      const h = document.querySelector(`input[data-match="${m.id}"][data-side="h"]`);
+      const a = document.querySelector(`input[data-match="${m.id}"][data-side="a"]`);
+      if(!h || !a) continue;
+      const ph = h.value===''? null : parseInt(h.value,10);
+      const pa = a.value===''? null : parseInt(a.value,10);
+      if(ph!=null || pa!=null) data[m.id] = { ph, pa };
+    }
+    localStorage.setItem(keyFor(currentPlayer,currentGW), JSON.stringify(data));
+  }
+
+  async function submitPredictions(){
+    saveLocally();
+    const list = FIXTURES[String(currentGW)]||[];
+    const payload = {
+      player: currentPlayer,
+      gw: currentGW,
+      predictions: list.map(m=>{
+        const h = document.querySelector(`input[data-match="${m.id}"][data-side="h"]`);
+        const a = document.querySelector(`input[data-match="${m.id}"][data-side="a"]`);
+        return { matchId:m.id, home:m.home, away:m.away, ph: h && h.value!==''?parseInt(h.value,10):null, pa: a && a.value!==''?parseInt(a.value,10):null };
+      })
+    };
+
+    const status = document.getElementById('status');
+    status.textContent = 'Saving...';
+    status.className='';
+
+    try {
+      const res = await fetch(API_URL, {
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const txt = await res.text();
+      if(!res.ok) throw new Error(txt||'Request failed');
+      status.textContent = 'Saved ✓';
+      status.className = 'ok';
+    } catch(e){
+      status.textContent = 'Error: '+e.message;
+      status.className = 'err';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    populateDropdowns();
+    renderFixtures();
+    loadLocally();
+    document.getElementById('fixturesWrap').addEventListener('input', saveLocally);
+    document.getElementById('saveBtn').addEventListener('click', submitPredictions);
+  });
+</script>
+</body>
+</html>
