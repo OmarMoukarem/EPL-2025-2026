@@ -3,58 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Premier League Predictor</title>
+<title>Premier League Predictions</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #f4f4f9; color: #333; margin: 0; padding: 0; }
-  header { background: #4B0082; color: white; padding: 1rem; text-align: center; }
-  h1 { margin: 0; }
-  .container { max-width: 900px; margin: 2rem auto; padding: 1rem; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-  select, input[type="number"], button { padding: 0.5rem; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #ccc; font-size: 1rem; }
-  button { background: #4B0082; color: white; border: none; cursor: pointer; }
-  button:hover { background: #6a0dad; }
-  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-  th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: center; }
-  th { background: #4B0082; color: white; }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    header {
+        background-color: #4B0082;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 24px;
+    }
+    main {
+        padding: 20px;
+        max-width: 900px;
+        margin: auto;
+    }
+    select, input[type="number"], button {
+        padding: 8px;
+        margin: 5px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    th {
+        background-color: #4B0082;
+        color: white;
+    }
+    tr:nth-child(even) {background-color: #f2f2f2;}
+    button {
+        background-color: #4B0082;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #6a0dad;
+    }
 </style>
 </head>
 <body>
+<header>Premier League Predictions</header>
+<main>
+    <label for="player">Select Player:</label>
+    <select id="player">
+        <option value="">--Select Player--</option>
+        <option>Omar</option>
+        <option>Robbie</option>
+        <option>Khalil</option>
+        <option>Idriss</option>
+        <option>Aboudi</option>
+        <option>Masri</option>
+        <option>Hafez</option>
+        <option>Joseph</option>
+        <option>Rizk</option>
+        <option>Dani</option>
+    </select>
 
-<header>
-  <h1>Premier League Predictor</h1>
-</header>
+    <label for="gameweek">Select Gameweek:</label>
+    <select id="gameweek">
+        <option value="">--Select Gameweek--</option>
+        <!-- Gameweek options dynamically added -->
+    </select>
 
-<div class="container">
-  <label for="player">Select Player:</label>
-  <select id="player">
-    <option value="">--Select Player--</option>
-    <option>Omar</option>
-    <option>Robbie</option>
-    <option>Khalil</option>
-    <option>Idriss</option>
-    <option>Aboudi</option>
-    <option>Masri</option>
-    <option>Hafez</option>
-    <option>Joseph</option>
-    <option>Rizk</option>
-    <option>Dani</option>
-  </select>
+    <table id="gamesTable">
+        <thead>
+            <tr>
+                <th>Home Team</th>
+                <th>Away Team</th>
+                <th>Home Score</th>
+                <th>Away Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Games dynamically inserted -->
+        </tbody>
+    </table>
 
-  <label for="gameweek">Select Gameweek:</label>
-  <select id="gameweek">
-    <option value="">--Select Gameweek--</option>
-  </select>
-
-  <form id="predictionForm">
-    <table id="matchesTable"></table>
-    <button type="submit">Submit Predictions</button>
-  </form>
-
-  <div id="status"></div>
-</div>
+    <button id="submitBtn">Submit Predictions</button>
+</main>
 
 <script>
 const scriptURL = 'https://script.google.com/macros/s/AKfycbx99lxiy9mAJYMTqeYyvxnNQ2UNnrDq0Zk9gh6mWmACtTmjUsUYipZCEUAw3IeZdHzW/exec';
-
 const gameweeks = {
   "1": ["Liverpool v AFC Bournemouth","Aston Villa v Newcastle United","Brighton & Hove Albion v Fulham","Sunderland v West Ham United","Tottenham Hotspur v Burnley","Wolverhampton Wanderers v Manchester City","Chelsea v Crystal Palace","Nottingham Forest v Brentford","Manchester United v Arsenal","Leeds United v Everton"],
   "2": ["West Ham v Chelsea","Manchester City v Tottenham Hotspur","AFC Bournemouth v Wolverhampton Wanderers","Brentford v Aston Villa","Burnley v Sunderland","Arsenal v Leeds United","Crystal Palace v Nottingham Forest","Everton v Brighton & Hove Albion","Fulham v Manchester United","Newcastle United v Liverpool"],
@@ -96,54 +141,54 @@ const gameweeks = {
   "38": ["Brighton & Hove Albion v Manchester United","Burnley v Wolverhampton Wanderers","Crystal Palace v Arsenal","Fulham v Newcastle United","Liverpool v Brentford","Manchester City v Aston Villa","Nottingham Forest v AFC Bournemouth","Sunderland v Chelsea","Tottenham Hotspur v Everton","West Ham United v Leeds United"]
 };
 
-// Populate Gameweek dropdown
-const gwSelect = document.getElementById('gameweek');
-for (let gw in gameweeks) {
-  let opt = document.createElement('option');
-  opt.value = gw;
-  opt.textContent = 'Gameweek ' + gw;
-  gwSelect.appendChild(opt);
+const gameweekSelect = document.getElementById('gameweek');
+for (let gw = 1; gw <= 38; gw++) {
+  const option = document.createElement('option');
+  option.value = gw;
+  option.textContent = `Gameweek ${gw}`;
+  gameweekSelect.appendChild(option);
 }
 
-// Populate matches when gameweek changes
-gwSelect.addEventListener('change', () => {
-  const table = document.getElementById('matchesTable');
-  table.innerHTML = '';
-  const gw = gwSelect.value;
-  if (!gw) return;
-  gameweeks[gw].forEach((match, idx) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${match}</td>
-      <td><input type="number" name="home_${idx}" placeholder="Home" min="0" max="20" required></td>
-      <td><input type="number" name="away_${idx}" placeholder="Away" min="0" max="20" required></td>
-    `;
-    table.appendChild(row);
-  });
+gameweekSelect.addEventListener('change', () => {
+  const gw = gameweekSelect.value;
+  const tbody = document.querySelector('#gamesTable tbody');
+  tbody.innerHTML = '';
+  if (gw && gameweeks[gw]) {
+    gameweeks[gw].forEach(game => {
+      const [home, away] = game.split(' v ');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${home}</td><td>${away}</td>
+        <td><input type="number" min="0" class="homeScore"></td>
+        <td><input type="number" min="0" class="awayScore"></td>`;
+      tbody.appendChild(tr);
+    });
+  }
 });
 
-// Handle form submission
-document.getElementById('predictionForm').addEventListener('submit', e => {
-  e.preventDefault();
+document.getElementById('submitBtn').addEventListener('click', () => {
   const player = document.getElementById('player').value;
   const gw = document.getElementById('gameweek').value;
   if (!player || !gw) { alert('Select player and gameweek'); return; }
 
-  const formData = new FormData(e.target);
-  formData.append('player', player);
-  formData.append('gameweek', gw);
+  const rows = document.querySelectorAll('#gamesTable tbody tr');
+  const predictions = [];
+  rows.forEach(row => {
+    const home = row.cells[0].textContent;
+    const away = row.cells[1].textContent;
+    const homeScore = row.querySelector('.homeScore').value;
+    const awayScore = row.querySelector('.awayScore').value;
+    predictions.push({home, away, homeScore, awayScore});
+  });
 
-  fetch(scriptURL, { method: 'POST', body: formData })
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('status').textContent = 'Predictions submitted successfully!';
-    })
-    .catch(err => {
-      document.getElementById('status').textContent = 'Submission failed. Try again.';
-      console.error(err);
-    });
+  fetch(scriptURL, {
+    method: 'POST',
+    body: JSON.stringify({player, gameweek: gw, predictions}),
+    headers: {'Content-Type': 'application/json'}
+  })
+  .then(response => response.text())
+  .then(data => alert('Predictions submitted successfully!'))
+  .catch(error => alert('Error submitting predictions: ' + error));
 });
 </script>
-
 </body>
 </html>
