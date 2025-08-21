@@ -119,7 +119,7 @@ function submitPredictions(){
     data.push({match, homeScore, awayScore});
   });
 
-  fetch("YOUR_GOOGLE_APPS_SCRIPT_URL", {
+  fetch("https://script.google.com/macros/s/AKfycbzRD4ClVmvSSfZJGDR1YT0rS6OHu3WKcd6FIHgb4-BLqK2KDdlSMmjsByvV1y0hetGy/exec", {
     method: "POST",
     body: JSON.stringify({player, gameweek: gw, predictions: data})
   })
