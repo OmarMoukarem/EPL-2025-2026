@@ -5,101 +5,118 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premier League Score Predictor</title>
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
-    background: #f0f8ff; /* light blue background */
-    color: #333;
-  }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  background: #f0f8ff;
+  color: #333;
+}
 
-  h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #1e2a78;
-    font-size: 2.2rem;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-  }
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #1e2a78;
+  font-size: 2.2rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
 
-  label {
-    display: block;
-    margin: 10px 0 5px;
-    font-weight: 600;
-    color: #1e2a78;
-  }
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 600;
+  color: #1e2a78;
+}
 
-  select, input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    transition: all 0.2s;
-    background-color: #e6f0ff; /* light color for inputs */
-  }
+select, input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: #e6f0ff;
+}
 
-  select:focus, input:focus {
-    border-color: #1e2a78;
-    outline: none;
-    box-shadow: 0 0 8px rgba(30,42,120,0.3);
-  }
+select:focus, input:focus {
+  border-color: #1e2a78;
+  outline: none;
+  box-shadow: 0 0 8px rgba(30,42,120,0.3);
+}
 
 .match {
-    display: flex;
-    align-items: center;
-    gap: 5px; /* reduced spacing between label and inputs */
-    background: #fff8dc;
-    padding: 10px 12px; /* slightly smaller padding */
-    border-radius: 10px;
-    margin-bottom: 8px; /* reduce spacing between match cards */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: transform 0.2s, background 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff8dc;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s, background 0.3s;
 }
-  .match:hover {
-    transform: translateY(-2px);
-    background: #fffacd; /* slightly different yellow on hover */
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-  }
+
+.match:hover {
+  transform: translateY(-2px);
+  background: #fffacd;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
 
 .match input {
-    width: 50px; /* slightly smaller width */
-    text-align: center;
-    margin-left: 0; /* remove extra space */
-    border-radius: 6px;
-    background-color: #f0f8ff;
+  width: 50px;
+  text-align: center;
+  margin-left: 0;
+  border-radius: 6px;
+  background-color: #f0f8ff;
 }
 
-  button {
+/* Home vs Away colors */
+.match input[id^="home_"] {
+  background-color: #d1e7dd; /* light green for Home */
+}
+
+.match input[id^="away_"] {
+  background-color: #f8d7da; /* light red/pink for Away */
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #ff4500;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: #e03e00;
+  transform: translateY(-2px);
+}
+
+/* MOBILE-FRIENDLY STYLING */
+@media (max-width: 768px) {
+  .match {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 8px 10px;
+  }
+
+  .match input {
+    width: 100%; /* full-width on mobile */
+    margin-left: 0;
+    margin-top: 5px;
+  }
+
+  select, button {
     width: 100%;
-    padding: 14px;
-    background: #ff4500; /* bright orange button */
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 15px;
-    transition: background 0.3s, transform 0.2s;
   }
-
-  button:hover {
-    background: #e03e00; /* darker orange on hover */
-    transform: translateY(-2px);
-  }
-
-  @media (max-width: 600px) {
-    .match {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .match input {
-      width: 100%;
-      margin-left: 0;
-      margin-top: 5px;
-    }
-  }
+}
 </style>
 </head>
 <body>
