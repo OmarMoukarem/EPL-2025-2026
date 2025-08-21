@@ -44,30 +44,29 @@
     box-shadow: 0 0 8px rgba(30,42,120,0.3);
   }
 
-  .match {
+.match {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: #fff8dc; /* light yellow card */
-    padding: 12px 15px;
+    gap: 5px; /* reduced spacing between label and inputs */
+    background: #fff8dc;
+    padding: 10px 12px; /* slightly smaller padding */
     border-radius: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 8px; /* reduce spacing between match cards */
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     transition: transform 0.2s, background 0.3s;
-  }
-
+}
   .match:hover {
     transform: translateY(-2px);
     background: #fffacd; /* slightly different yellow on hover */
     box-shadow: 0 6px 12px rgba(0,0,0,0.08);
   }
 
- .match input {
-    width: 70px;
+.match input {
+    width: 50px; /* slightly smaller width */
     text-align: center;
-    margin-left: 2px; /* reduced from 5px to 2px */
+    margin-left: 0; /* remove extra space */
     border-radius: 6px;
-    background-color: #f0f8ff; /* light input inside match card */
+    background-color: #f0f8ff;
 }
 
   button {
