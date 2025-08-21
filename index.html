@@ -8,23 +8,23 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 20px;
-  background: #f0f8ff;
-  color: #333;
+  background: linear-gradient(135deg, #4B0082, #32CD32); /* Purple to Green gradient */
+  color: #fff;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 30px;
-  color: #1e2a78;
+  color: #fff;
   font-size: 2.2rem;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
 }
 
 label {
   display: block;
   margin: 10px 0 5px;
   font-weight: 600;
-  color: #1e2a78;
+  color: #fff;
 }
 
 select, input {
@@ -35,31 +35,31 @@ select, input {
   border: 1px solid #ccc;
   font-size: 1rem;
   transition: all 0.2s;
-  background-color: #e6f0ff;
+  background-color: rgba(255,255,255,0.9);
+  color: #000;
 }
 
 select:focus, input:focus {
-  border-color: #1e2a78;
+  border-color: #fff;
   outline: none;
-  box-shadow: 0 0 8px rgba(30,42,120,0.3);
+  box-shadow: 0 0 8px rgba(255,255,255,0.6);
 }
 
 .match {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: #fff8dc;
+  background: rgba(255,255,255,0.2);
   padding: 10px 12px;
   border-radius: 10px;
   margin-bottom: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: transform 0.2s, background 0.3s;
 }
 
 .match:hover {
   transform: translateY(-2px);
-  background: #fffacd;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.3);
 }
 
 .match input {
@@ -67,23 +67,24 @@ select:focus, input:focus {
   text-align: center;
   margin-left: 0;
   border-radius: 6px;
-  background-color: #f0f8ff;
 }
 
 /* Home vs Away colors */
 .match input[id^="home_"] {
-  background-color: #d1e7dd; /* light green for Home */
+  background-color: #32CD32; /* green for Home */
+  color: #000;
 }
 
 .match input[id^="away_"] {
-  background-color: #f8d7da; /* light red/pink for Away */
+  background-color: #9370DB; /* purple for Away */
+  color: #fff;
 }
 
 button {
   width: 100%;
   padding: 14px;
-  background: #ff4500;
-  color: white;
+  background: #FFD700; /* bright yellow button for contrast */
+  color: #000;
   font-size: 1.1rem;
   font-weight: 600;
   border: none;
@@ -94,7 +95,7 @@ button {
 }
 
 button:hover {
-  background: #e03e00;
+  background: #FFC107;
   transform: translateY(-2px);
 }
 
@@ -108,7 +109,7 @@ button:hover {
   }
 
   .match input {
-    width: 100%; /* full-width on mobile */
+    width: 100%;
     margin-left: 0;
     margin-top: 5px;
   }
