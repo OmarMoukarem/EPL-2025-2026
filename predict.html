@@ -3,137 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Premier League Predictor 2025-26</title>
+<title>Premier League Predictor</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; }
-h1 { text-align: center; }
-.container { max-width: 800px; margin: auto; }
-label { display: block; margin-top: 10px; }
-select, input { padding: 5px; margin-top: 5px; width: 100%; max-width: 300px; }
-.match { margin: 10px 0; display: flex; gap: 10px; align-items: center; }
-.match input { width: 60px; }
-button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f4;
+margin: 0;
+padding: 0;
+}
+header {
+background-color: #38003c;
+color: white;
+text-align: center;
+padding: 15px;
+font-size: 1.5em;
+}
+.container {
+max-width: 800px;
+margin: auto;
+background: white;
+padding: 20px;
+border-radius: 10px;
+margin-top: 20px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+label {
+font-weight: bold;
+margin-top: 10px;
+display: block;
+}
+select, input[type=number], button {
+width: 100%;
+padding: 10px;
+margin-top: 5px;
+border-radius: 5px;
+border: 1px solid #ccc;
+font-size: 1em;
+}
+button {
+background-color: #e90052;
+color: white;
+border: none;
+cursor: pointer;
+font-weight: bold;
+}
+button:hover {
+background-color: #c30046;
+}
+.match {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin: 10px 0;
+}
+.match span {
+flex: 1;
+text-align: center;
+font-weight: bold;
+}
+.score {
+width: 50px;
+text-align: center;
+}
+.success {
+color: green;
+margin-top: 10px;
+font-weight: bold;
+}
+.error {
+color: red;
+margin-top: 10px;
+font-weight: bold;
+}
 </style>
 </head>
 <body>
+<header>Premier League Predictor 2025/26</header>
 <div class="container">
-<h1>Premier League Predictor 2025-26</h1>
-<label for="player">Player:</label>
+<label for="player">Player</label>
 <select id="player"></select>
 
-<label for="gameweek">Gameweek:</label>
-<select id="gameweek"></select>
+
+<label for="gw">Gameweek</label>
+<select id="gw"></select>
+
 
 <div id="fixtures"></div>
 
-<button id="submitBtn">Submit Predictions</button>
+
+<button id="submit">Submit Predictions</button>
+<div id="message"></div>
 </div>
 
+
 <script>
-const players = ["Omar","Robbie","Khalil","Idriss","Aboudi","Masri","Hafez","Joseph","Rizk","Dani"];
-const gameweeks = Array.from({ length: 38 }, (_, i) => i + 1);
-
-const fixturesData = {
-1: ["Liverpool v AFC Bournemouth","Aston Villa v Newcastle United","Brighton & Hove Albion v Fulham","Sunderland v West Ham United","Tottenham Hotspur v Burnley","Wolverhampton Wanderers v Manchester City","Chelsea v Crystal Palace","Nottingham Forest v Brentford","Manchester United v Arsenal","Leeds United v Everton"],
-2: ["West Ham v Chelsea","Manchester City v Tottenham Hotspur","AFC Bournemouth v Wolverhampton Wanderers","Brentford v Aston Villa","Burnley v Sunderland","Arsenal v Leeds United","Crystal Palace v Nottingham Forest","Everton v Brighton & Hove Albion","Fulham v Manchester United","Newcastle United v Liverpool"],
-3: ["Chelsea v Fulham","Manchester United v Burnley","Sunderland v Brentford","Tottenham Hotspur v AFC Bournemouth","Wolverhampton Wanderers v Everton","Leeds United v Newcastle United","Brighton & Hove Albion v Manchester City","Nottingham Forest v West Ham United","Liverpool v Arsenal","Aston Villa v Crystal Palace"],
-4: ["Arsenal v Nott'm Forest","AFC Bournemouth v Brighton","Crystal Palace v Sunderland","Everton v Aston Villa","Fulham v Leeds United","Newcastle United v Wolves","West Ham United v Spurs","Brentford v Chelsea","Burnley v Liverpool","Man City v Man Utd"],
-5: ["Liverpool v Everton","AFC Bournemouth v Newcastle United","Brighton v Spurs","Burnley v Nott'm Forest","West Ham United v Crystal Palace","Wolves v Leeds United","Man Utd v Chelsea","Fulham v Brentford","Sunderland v Aston Villa","Arsenal v Man City"],
-6: ["Brentford v Man Utd","Aston Villa v Fulham","Chelsea v Brighton","Crystal Palace v Liverpool","Leeds United v AFC Bournemouth","Manchester City v Burnley","Nott'm Forest v Sunderland","Spurs v Wolves","Newcastle United v Arsenal","Everton v West Ham United"],
-7: ["AFC Bournemouth v Fulham","Arsenal v West Ham United","Aston Villa v Burnley","Brentford v Manchester City","Chelsea v Liverpool","Everton v Crystal Palace","Leeds United v Tottenham Hotspur","Manchester United v Sunderland","Newcastle United v Nottingham Forest","Wolverhampton Wanderers v Brighton & Hove Albion"],
-8: ["Brighton & Hove Albion v Newcastle United","Burnley v Leeds United","Crystal Palace v AFC Bournemouth","Fulham v Arsenal","Liverpool v Manchester United","Manchester City v Everton","Nottingham Forest v Chelsea","Sunderland v Wolverhampton Wanderers","Tottenham Hotspur v Aston Villa","West Ham United v Brentford"],
-9: ["AFC Bournemouth v Nottingham Forest","Arsenal v Crystal Palace","Aston Villa v Manchester City","Brentford v Liverpool","Chelsea v Sunderland","Everton v Tottenham Hotspur","Leeds United v West Ham United","Manchester United v Brighton & Hove Albion","Newcastle United v Fulham","Wolverhampton Wanderers v Burnley"],
-10: ["Brighton & Hove Albion v Leeds United","Burnley v Arsenal","Crystal Palace v Brentford","Fulham v Wolverhampton Wanderers","Liverpool v Aston Villa","Manchester City v AFC Bournemouth","Nottingham Forest v Manchester United","Sunderland v Everton","Tottenham Hotspur v Chelsea","West Ham United v Newcastle United"],
-11: ["Aston Villa v AFC Bournemouth","Brentford v Newcastle United","Chelsea v Wolverhampton Wanderers","Crystal Palace v Brighton & Hove Albion","Everton v Fulham","Manchester City v Liverpool","Nottingham Forest v Leeds United","Sunderland v Arsenal","Tottenham Hotspur v Manchester United","West Ham United v Burnley"],
-12: ["AFC Bournemouth v West Ham United","Arsenal v Tottenham Hotspur","Brighton & Hove Albion v Brentford","Burnley v Chelsea","Fulham v Sunderland","Leeds United v Aston Villa","Liverpool v Nottingham Forest","Manchester United v Everton","Newcastle United v Manchester City","Wolverhampton Wanderers v Crystal Palace"],
-13: ["Aston Villa v Wolverhampton Wanderers","Brentford v Burnley","Chelsea v Arsenal","Crystal Palace v Manchester United","Everton v Newcastle United","Manchester City v Leeds United","Nottingham Forest v Brighton & Hove Albion","Sunderland v AFC Bournemouth","Tottenham Hotspur v Fulham","West Ham United v Liverpool"],
-14: ["AFC Bournemouth v Everton","Arsenal v Brentford","Brighton & Hove Albion v Aston Villa","Burnley v Crystal Palace","Fulham v Manchester City","Leeds United v Chelsea","Liverpool v Sunderland","Manchester United v West Ham United","Newcastle United v Tottenham Hotspur","Wolverhampton Wanderers v Nottingham Forest"],
-15: ["AFC Bournemouth v Chelsea","Aston Villa v Arsenal","Brighton & Hove Albion v West Ham United","Everton v Nottingham Forest","Fulham v Crystal Palace","Leeds United v Liverpool","Manchester City v Sunderland","Newcastle United v Burnley","Tottenham Hotspur v Brentford","Wolverhampton Wanderers v Manchester United"],
-16: ["Arsenal v Wolverhampton Wanderers","Brentford v Leeds United","Burnley v Fulham","Chelsea v Everton","Crystal Palace v Manchester City","Liverpool v Brighton & Hove Albion","Manchester United v AFC Bournemouth","Nottingham Forest v Tottenham Hotspur","Sunderland v Newcastle United","West Ham United v Aston Villa"],
-17: ["AFC Bournemouth v Burnley","Aston Villa v Manchester United","Brighton & Hove Albion v Sunderland","Everton v Arsenal","Fulham v Nottingham Forest","Leeds United v Crystal Palace","Manchester City v West Ham United","Newcastle United v Chelsea","Tottenham Hotspur v Liverpool","Wolverhampton Wanderers v Brentford"],
-18: ["Arsenal v Brighton & Hove Albion","Brentford v AFC Bournemouth","Burnley v Everton","Chelsea v Aston Villa","Crystal Palace v Tottenham Hotspur","Liverpool v Wolverhampton Wanderers","Manchester United v Newcastle United","Nottingham Forest v Manchester City","Sunderland v Leeds United","West Ham United v Fulham"],
-19: ["Arsenal v Aston Villa","Brentford v Tottenham Hotspur","Burnley v Newcastle United","Chelsea v AFC Bournemouth","Crystal Palace v Fulham","Liverpool v Leeds United","Manchester United v Wolverhampton Wanderers","Nottingham Forest v Everton","Sunderland v Manchester City","West Ham United v Brighton & Hove Albion"],
-20: ["AFC Bournemouth v Arsenal","Aston Villa v Nottingham Forest","Brighton & Hove Albion v Burnley","Everton v Brentford","Fulham v Liverpool","Leeds United v Manchester United","Manchester City v Chelsea","Newcastle United v Crystal Palace","Tottenham Hotspur v Sunderland","Wolverhampton Wanderers v West Ham United"],
-21: ["AFC Bournemouth v Tottenham Hotspur","Arsenal v Liverpool","Brentford v Sunderland","Burnley v Manchester United","Crystal Palace v Aston Villa","Everton v Wolverhampton Wanderers","Fulham v Chelsea","Manchester City v Brighton & Hove Albion","Newcastle United v Leeds United","West Ham United v Nottingham Forest"],
-22: ["Aston Villa v Everton","Brighton & Hove Albion v AFC Bournemouth","Chelsea v Brentford","Leeds United v Fulham","Liverpool v Burnley","Manchester United v Manchester City","Nottingham Forest v Arsenal","Sunderland v Crystal Palace","Tottenham Hotspur v West Ham United","Wolverhampton Wanderers v Newcastle United"],
-23: ["AFC Bournemouth v Liverpool","Arsenal v Manchester United","Brentford v Nottingham Forest","Burnley v Tottenham Hotspur","Crystal Palace v Chelsea","Everton v Leeds United","Fulham v Brighton & Hove Albion","Manchester City v Wolverhampton Wanderers","Newcastle United v Aston Villa","West Ham United v Sunderland"],
-24: ["Aston Villa v Brentford","Brighton & Hove Albion v Everton","Chelsea v West Ham United","Leeds United v Arsenal","Liverpool v Newcastle United","Manchester United v Fulham","Nottingham Forest v Crystal Palace","Sunderland v Burnley","Tottenham Hotspur v Manchester City","Wolverhampton Wanderers v AFC Bournemouth"],
-25: ["AFC Bournemouth v Aston Villa","Arsenal v Sunderland","Brighton & Hove Albion v Crystal Palace","Burnley v West Ham United","Fulham v Everton","Leeds United v Nottingham Forest","Liverpool v Manchester City","Manchester United v Tottenham Hotspur","Newcastle United v Brentford","Wolverhampton Wanderers v Chelsea"],
-26: ["Aston Villa v Brighton & Hove Albion","Brentford v Arsenal","Chelsea v Leeds United","Crystal Palace v Burnley","Everton v AFC Bournemouth","Manchester City v Fulham","Nottingham Forest v Wolverhampton Wanderers","Sunderland v Liverpool","Tottenham Hotspur v Newcastle United","West Ham United v Manchester United"],
-27: ["Aston Villa v Leeds United","Brentford v Brighton & Hove Albion","Chelsea v Burnley","Crystal Palace v Wolverhampton Wanderers","Everton v Manchester United","Manchester City v Newcastle United","Nottingham Forest v Liverpool","Sunderland v Fulham","Tottenham Hotspur v Arsenal","West Ham United v AFC Bournemouth"],
-28: ["AFC Bournemouth v Sunderland","Arsenal v Chelsea","Brighton & Hove Albion v Nottingham Forest","Burnley v Brentford","Fulham v Tottenham Hotspur","Leeds United v Manchester City","Liverpool v West Ham United","Manchester United v Crystal Palace","Newcastle United v Everton","Wolverhampton Wanderers v Aston Villa"],
-29: ["AFC Bournemouth v Brentford","Aston Villa v Chelsea","Brighton & Hove Albion v Arsenal","Everton v Burnley","Fulham v West Ham United","Leeds United v Sunderland","Manchester City v Nottingham Forest","Newcastle United v Manchester United","Tottenham Hotspur v Crystal Palace","Wolverhampton Wanderers v Liverpool"],
-30: ["Arsenal v Everton","Brentford v Wolverhampton Wanderers","Burnley v AFC Bournemouth","Chelsea v Newcastle United","Crystal Palace v Leeds United","Liverpool v Tottenham Hotspur","Manchester United v Aston Villa","Nottingham Forest v Fulham","Sunderland v Brighton & Hove Albion","West Ham United v Manchester City"],
-31: ["AFC Bournemouth v Manchester United","Aston Villa v West Ham United","Brighton & Hove Albion v Liverpool","Everton v Chelsea","Fulham v Burnley","Leeds United v Brentford","Manchester City v Crystal Palace","Newcastle United v Sunderland","Tottenham Hotspur v Nottingham Forest","Wolverhampton Wanderers v Arsenal"],
-32: ["Arsenal v AFC Bournemouth","Brentford v Everton","Burnley v Brighton & Hove Albion","Chelsea v Manchester City","Crystal Palace v Newcastle United","Liverpool v Fulham","Manchester United v Leeds United","Nottingham Forest v Aston Villa","Sunderland v Tottenham Hotspur","West Ham United v Wolverhampton Wanderers"],
-33: ["Aston Villa v Sunderland","Brentford v Fulham","Chelsea v Manchester United","Crystal Palace v West Ham United","Everton v Liverpool","Leeds United v Wolverhampton Wanderers","Manchester City v Arsenal","Newcastle United v AFC Bournemouth","Nottingham Forest v Burnley","Tottenham Hotspur v Brighton & Hove Albion"],
-34: ["AFC Bournemouth v Leeds United","Arsenal v Newcastle United","Brighton & Hove Albion v Chelsea","Burnley v Manchester City","Fulham v Aston Villa","Liverpool v Crystal Palace","Manchester United v Brentford","Sunderland v Nottingham Forest","West Ham United v Everton","Wolverhampton Wanderers v Tottenham Hotspur"],
-35: ["AFC Bournemouth v Crystal Palace","Arsenal v Fulham","Aston Villa v Tottenham Hotspur","Brentford v West Ham United","Chelsea v Nottingham Forest","Everton v Manchester City","Leeds United v Burnley","Manchester United v Liverpool","Newcastle United v Brighton & Hove Albion","Wolverhampton Wanderers v Sunderland"],
-36: ["Brighton & Hove Albion v Wolverhampton Wanderers","Burnley v Aston Villa","Crystal Palace v Everton","Fulham v AFC Bournemouth","Liverpool v Chelsea","Manchester City v Brentford","Nottingham Forest v Newcastle United","Sunderland v Manchester United","Tottenham Hotspur v Leeds United","West Ham United v Arsenal"],
-37: ["AFC Bournemouth v Manchester City","Arsenal v Burnley","Aston Villa v Liverpool","Brentford v Crystal Palace","Chelsea v Tottenham Hotspur","Everton v Sunderland","Leeds United v Brighton & Hove Albion","Manchester United v Nottingham Forest","Newcastle United v West Ham United","Wolverhampton Wanderers v Fulham"],
-38: ["Brighton & Hove Albion v Manchester United","Burnley v Wolverhampton Wanderers","Crystal Palace v Arsenal","Fulham v Newcastle United","Liverpool v Brentford","Manchester City v Aston Villa","Nottingham Forest v AFC Bournemouth","Sunderland v Chelsea","Tottenham Hotspur v Everton","West Ham United v Leeds United"]
-};
-
-const playerSelect = document.getElementById("player");
-players.forEach(p => {
-  const opt = document.createElement("option");
-  opt.value = p;
-  opt.textContent = p;
-  playerSelect.appendChild(opt);
-});
-
-const gwSelect = document.getElementById("gameweek");
-gameweeks.forEach(gw => {
-  const opt = document.createElement("option");
-  opt.value = gw;
-  opt.textContent = gw;
-  gwSelect.appendChild(opt);
-});
-
-const fixturesDiv = document.getElementById("fixtures");
-
-function renderFixtures(gw) {
-  fixturesDiv.innerHTML = "";
-  fixturesData[gw].forEach((match, idx) => {
-    const div = document.createElement("div");
-    div.className = "match";
-    div.innerHTML = `
-      <span>${match}</span>
-      <input type="number" placeholder="Home" min="0" id="home_${idx}">
-      <input type="number" placeholder="Away" min="0" id="away_${idx}">
-    `;
-    fixturesDiv.appendChild(div);
-  });
-}
-
-gwSelect.addEventListener("change", () => {
-  renderFixtures(gwSelect.value);
-});
-
-// Initialize first gameweek
-renderFixtures(1);
-
-document.getElementById("submitBtn").addEventListener("click", async () => {
-  const player = playerSelect.value;
-  const gw = gwSelect.value;
-  const predictions = fixturesData[gw].map((match, idx) => {
-    const home = document.getElementById(`home_${idx}`).value || 0;
-    const away = document.getElementById(`away_${idx}`).value || 0;
-    return { match, home, away };
-  });
-
-  try {
-    const res = await fetch("https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxx/exec", {
-      method: "POST",
-      body: JSON.stringify({ player, gw, predictions }),
-      headers: { "Content-Type": "application/json" }
-    });
-    alert("Predictions submitted!");
-  } catch (e) {
-    console.error(e);
-    alert("Error submitting predictions.");
-  }
-});
-</script>
-</body>
+const scriptURL = "https://script.google.com/macros/s/AKfycbx99lxiy9mAJYMTqeYyvxnNQ2UNnrDq0Zk9gh6mWmACtTmjUsUYipZCEUAw3IeZdHzW/exec";
 </html>
