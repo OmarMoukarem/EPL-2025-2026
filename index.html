@@ -74,13 +74,16 @@ gameweekSelect.addEventListener("change", () => {
   matchesDiv.innerHTML = "";
   if(fixtures[gw]){
     fixtures[gw].forEach((match, idx) => {
-      const [home, away] = match.split(' v ');
+      const teams = match.split(' v ');
+      const home = teams[0].trim();
+      const away = teams[1].trim();
       const div = document.createElement("div");
       div.classList.add("match");
-      div.innerHTML = `<div class="team"><img src="${teamLogos[home]||''}" alt="${home} logo">${home}</div>
-                       <input type="number" min="0" placeholder="Home" id="home_${idx}">
-                       <input type="number" min="0" placeholder="Away" id="away_${idx}">
-                       <div class="team"><img src="${teamLogos[away]||''}" alt="${away} logo">${away}</div>`;
+      div.innerHTML =
+        '<div class="team"><img src="'+(teamLogos[home]||'')+'" alt="'+home+' logo">'+home+'</div>'+
+        '<input type="number" min="0" placeholder="Home" id="home_'+idx+'">'+
+        '<input type="number" min="0" placeholder="Away" id="away_'+idx+'">'+
+        '<div class="team"><img src="'+(teamLogos[away]||'')+'" alt="'+away+' logo">'+away+'</div>';
       matchesDiv.appendChild(div);
     });
   }
@@ -92,8 +95,8 @@ function submitPredictions(){
   if(!player || !gw){ alert("Select player and gameweek"); return; }
   const data = [];
   fixtures[gw].forEach((match, idx) => {
-    const homeScore = document.getElementById(`home_${idx}`).value;
-    const awayScore = document.getElementById(`away_${idx}`).value;
+    const homeScore = document.getElementById('home_'+idx).value;
+    const awayScore = document.getElementById('away_'+idx).value;
     data.push({match, homeScore, awayScore});
   });
   fetch("https://script.google.com/macros/s/AKfycbwvhWqnRS2tdU9ituc_IUFIId2bIizLO_Of20dtCNS5LaIiBb2JQHx7tagFjgOjlpLe/exec", {
