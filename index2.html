@@ -11,7 +11,6 @@
     margin: 0;
     padding: 0;
   }
-
   .container {
     max-width: 900px;
     margin: 40px auto;
@@ -20,106 +19,26 @@
     padding: 30px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   }
-
   h1 {
     text-align: center;
     margin-bottom: 30px;
     color: #1e2a78;
     font-size: 2rem;
   }
-
-  label {
-    font-weight: 600;
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    color: #333;
-  }
-
-  select, input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    transition: all 0.2s;
-  }
-
-  select:focus, input:focus {
-    border-color: #1e2a78;
-    outline: none;
-    box-shadow: 0 0 5px rgba(30,42,120,0.3);
-  }
-
-  .match {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f7f9fc;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-bottom: 12px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
-  }
-
-  .team {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .team img {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-  }
-
-  .score-inputs {
-    display: flex;
-    gap: 5px;
-  }
-
-  .score-inputs input {
-    width: 50px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    background: #1e2a78;
-    color: white;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: background 0.3s;
-  }
-
-  button:hover {
-    background: #15206c;
-  }
-
+  label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #333; }
+  select, input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; transition: all 0.2s; }
+  select:focus, input:focus { border-color: #1e2a78; outline: none; box-shadow: 0 0 5px rgba(30,42,120,0.3); }
+  .match { display: flex; align-items: center; justify-content: space-between; background: #f7f9fc; border-radius: 8px; padding: 10px 15px; margin-bottom: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+  .team { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .team img { width: 30px; height: 30px; object-fit: contain; }
+  .score-inputs { display: flex; gap: 5px; }
+  .score-inputs input { width: 50px; text-align: center; border-radius: 6px; border: 1px solid #ccc; }
+  button { width: 100%; padding: 12px; background: #1e2a78; color: white; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: background 0.3s; }
+  button:hover { background: #15206c; }
   @media (max-width: 600px) {
-    .match {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .score-inputs {
-      width: 100%;
-      justify-content: flex-start;
-    }
-
-    .score-inputs input {
-      width: 60px;
-    }
+    .match { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .score-inputs { width: 100%; justify-content: flex-start; }
+    .score-inputs input { width: 60px; }
   }
 </style>
 </head>
@@ -154,32 +73,12 @@
 </div>
 
 <script>
-const teamLogos = {
-  'Liverpool': 'https://crests.football-data.org/64/LIV.png',
-  'Manchester United': 'https://crests.football-data.org/66/MUN.png',
-  'Manchester City': 'https://crests.football-data.org/65/MCI.png',
-  'Chelsea': 'https://crests.football-data.org/61/CHE.png',
-  'Arsenal': 'https://crests.football-data.org/57/ARS.png',
-  'Tottenham Hotspur': 'https://crests.football-data.org/73/TOT.png',
-  'Everton': 'https://crests.football-data.org/62/EVE.png',
-  'Leeds United': 'https://crests.football-data.org/341/LEEDS.png',
-  'Aston Villa': 'https://crests.football-data.org/58/AVL.png',
-  'Newcastle United': 'https://crests.football-data.org/67/NEW.png',
-  'Brighton & Hove Albion': 'https://crests.football-data.org/397/BHA.png',
-  'Southampton': 'https://crests.football-data.org/340/SOU.png',
-  'Crystal Palace': 'https://crests.football-data.org/354/CRY.png',
-  'West Ham United': 'https://crests.football-data.org/563/WHA.png',
-  'Wolverhampton Wanderers': 'https://crests.football-data.org/76/WOL.png',
-  'Brentford': 'https://crests.football-data.org/397/BRN.png',
-  'Fulham': 'https://crests.football-data.org/63/FUL.png',
-  'Nottingham Forest': 'https://crests.football-data.org/75/NGF.png',
-  'Sunderland': 'https://crests.football-data.org/71/SUN.png',
-  'Burnley': 'https://crests.football-data.org/328/BUR.png',
-  'AFC Bournemouth': 'https://crests.football-data.org/104/BOU.png'
-};
+// Dummy team logos
+const teamLogos = { 'Liverpool':'https://crests.football-data.org/64/LIV.png','Manchester United':'https://crests.football-data.org/66/MUN.png','Manchester City':'https://crests.football-data.org/65/MCI.png','Chelsea':'https://crests.football-data.org/61/CHE.png','Arsenal':'https://crests.football-data.org/57/ARS.png','Tottenham Hotspur':'https://crests.football-data.org/73/TOT.png','Everton':'https://crests.football-data.org/62/EVE.png','Leeds United':'https://crests.football-data.org/341/LEEDS.png','Aston Villa':'https://crests.football-data.org/58/AVL.png','Newcastle United':'https://crests.football-data.org/67/NEW.png','Brighton & Hove Albion':'https://crests.football-data.org/397/BHA.png','Crystal Palace':'https://crests.football-data.org/354/CRY.png','West Ham United':'https://crests.football-data.org/563/WHA.png','Wolverhampton Wanderers':'https://crests.football-data.org/76/WOL.png','Brentford':'https://crests.football-data.org/397/BRN.png','Fulham':'https://crests.football-data.org/63/FUL.png','Nottingham Forest':'https://crests.football-data.org/75/NGF.png','Sunderland':'https://crests.football-data.org/71/SUN.png','Burnley':'https://crests.football-data.org/328/BUR.png','AFC Bournemouth':'https://crests.football-data.org/104/BOU.png'};
 
+// Simple fixture example
 const fixtures = {
-  1: ['Liverpool v AFC Bournemouth', 'Aston Villa v Newcastle United', 'Brighton & Hove Albion v Fulham', 'Sunderland v West Ham United', 'Tottenham Hotspur v Burnley', 'Wolverhampton Wanderers v Manchester City', 'Chelsea v Crystal Palace', 'Nottingham Forest v Brentford', 'Manchester United v Arsenal', 'Leeds United v Everton']
+  1: ['Liverpool v AFC Bournemouth','Aston Villa v Newcastle United','Brighton & Hove Albion v Fulham','Sunderland v West Ham United']
 };
 
 const gameweekSelect = document.getElementById("gameweek");
@@ -195,7 +94,7 @@ gameweekSelect.addEventListener("change", () => {
       div.classList.add("match");
       div.innerHTML = `
         <div class="team">
-          <img src="${teamLogos[home]||''}" alt="${home} Logo">
+          <img src="${teamLogos[home]||''}" alt="${home}">
           <span>${home}</span>
         </div>
         <div class="score-inputs">
@@ -203,7 +102,7 @@ gameweekSelect.addEventListener("change", () => {
           <input type="number" min="0" placeholder="Away" id="away_${idx}">
         </div>
         <div class="team">
-          <img src="${teamLogos[away]||''}" alt="${away} Logo">
+          <img src="${teamLogos[away]||''}" alt="${away}">
           <span>${away}</span>
         </div>
       `;
@@ -222,13 +121,10 @@ function submitPredictions(){
     const awayScore = document.getElementById(`away_${idx}`).value;
     data.push({match, homeScore, awayScore});
   });
-  fetch("https://script.google.com/macros/s/AKfycbwvhWqnRS2tdU9ituc_IUFIId2bIizLO_Of20dtCNS5LaIiBb2JQHx7tagFjgOjlpLe/exec", {
-    method: "POST",
-    body: JSON.stringify({player, gameweek: gw, predictions: data})
-  })
-  .then(res => res.json())
-  .then(res => alert("Predictions submitted successfully!"))
-  .catch(err => alert("Error submitting predictions"));
+  
+  // Instead of sending to server, just log
+  console.log({player, gameweek: gw, predictions: data});
+  alert("Predictions captured! Check console for data.");
 }
 </script>
 </body>
