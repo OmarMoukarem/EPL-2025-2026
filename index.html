@@ -7,18 +7,9 @@
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right, #f0f4f8, #e4ebf5);
-    margin: 0;
-    padding: 0;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 40px auto;
-    background: #fff;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 20px;
+    background: #f0f4f8;
+    color: #333;
   }
 
   h1 {
@@ -29,16 +20,14 @@
   }
 
   label {
-    font-weight: 600;
     display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    color: #333;
+    margin: 10px 0 5px;
+    font-weight: 600;
   }
 
   select, input {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     margin-bottom: 15px;
     border-radius: 6px;
     border: 1px solid #ccc;
@@ -56,36 +45,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #f7f9fc;
+    background: #fff;
+    padding: 12px 15px;
     border-radius: 8px;
-    padding: 10px 15px;
     margin-bottom: 12px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.05);
   }
 
-  .team {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .team img {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-  }
-
-  .score-inputs {
-    display: flex;
-    gap: 5px;
-  }
-
-  .score-inputs input {
-    width: 50px;
+  .match input {
+    width: 60px;
     text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    margin-left: 5px;
   }
 
   button {
@@ -97,7 +67,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 10px;
     transition: background 0.3s;
   }
 
@@ -109,77 +79,58 @@
     .match {
       flex-direction: column;
       align-items: flex-start;
-      gap: 10px;
     }
 
-    .score-inputs {
+    .match input {
       width: 100%;
-      justify-content: flex-start;
-    }
-
-    .score-inputs input {
-      width: 60px;
+      margin-left: 0;
+      margin-top: 5px;
     }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Premier League Score Predictor</h1>
 
-  <label for="player">Select Player:</label>
-  <select id="player">
-    <option value="">--Select Player--</option>
-    <option>Omar</option>
-    <option>Robbie</option>
-    <option>Khalil</option>
-    <option>Idriss</option>
-    <option>Aboudi</option>
-    <option>Masri</option>
-    <option>Hafez</option>
-    <option>Joseph</option>
-    <option>Rizk</option>
-    <option>Dani</option>
-  </select>
+<h1>Premier League Score Predictor</h1>
 
-  <label for="gameweek">Select Gameweek:</label>
-  <select id="gameweek">
-    <option value="">--Select Gameweek--</option>
-    <script>for(let i=1;i<=38;i++){document.write(`<option value="${i}">Gameweek ${i}</option>`);}</script>
-  </select>
+<label for="player">Select Player:</label>
+<select id="player">
+  <option value="">--Select Player--</option>
+  <option>Omar</option>
+  <option>Robbie</option>
+  <option>Khalil</option>
+  <option>Idriss</option>
+  <option>Aboudi</option>
+  <option>Masri</option>
+  <option>Hafez</option>
+  <option>Joseph</option>
+  <option>Rizk</option>
+  <option>Dani</option>
+</select>
 
-  <div id="matches"></div>
+<label for="gameweek">Select Gameweek:</label>
+<select id="gameweek">
+  <option value="">--Select Gameweek--</option>
+  <script>
+    for(let i=1;i<=38;i++){
+      document.write(`<option value="${i}">Gameweek ${i}</option>`);
+    }
+  </script>
+</select>
 
-  <button onclick="submitPredictions()">Submit Predictions</button>
-</div>
+<div id="matches"></div>
+
+<button onclick="submitPredictions()">Submit Predictions</button>
 
 <script>
-const teamLogos = {
-  'Liverpool': 'https://crests.football-data.org/64/LIV.png',
-  'Manchester United': 'https://crests.football-data.org/66/MUN.png',
-  'Manchester City': 'https://crests.football-data.org/65/MCI.png',
-  'Chelsea': 'https://crests.football-data.org/61/CHE.png',
-  'Arsenal': 'https://crests.football-data.org/57/ARS.png',
-  'Tottenham Hotspur': 'https://crests.football-data.org/73/TOT.png',
-  'Everton': 'https://crests.football-data.org/62/EVE.png',
-  'Leeds United': 'https://crests.football-data.org/341/LEEDS.png',
-  'Aston Villa': 'https://crests.football-data.org/58/AVL.png',
-  'Newcastle United': 'https://crests.football-data.org/67/NEW.png',
-  'Brighton & Hove Albion': 'https://crests.football-data.org/397/BHA.png',
-  'Southampton': 'https://crests.football-data.org/340/SOU.png',
-  'Crystal Palace': 'https://crests.football-data.org/354/CRY.png',
-  'West Ham United': 'https://crests.football-data.org/563/WHA.png',
-  'Wolverhampton Wanderers': 'https://crests.football-data.org/76/WOL.png',
-  'Brentford': 'https://crests.football-data.org/397/BRN.png',
-  'Fulham': 'https://crests.football-data.org/63/FUL.png',
-  'Nottingham Forest': 'https://crests.football-data.org/75/NGF.png',
-  'Sunderland': 'https://crests.football-data.org/71/SUN.png',
-  'Burnley': 'https://crests.football-data.org/328/BUR.png',
-  'AFC Bournemouth': 'https://crests.football-data.org/104/BOU.png'
-};
-
 const fixtures = {
-  1: ['Liverpool v AFC Bournemouth', 'Aston Villa v Newcastle United', 'Brighton & Hove Albion v Fulham', 'Sunderland v West Ham United', 'Tottenham Hotspur v Burnley', 'Wolverhampton Wanderers v Manchester City', 'Chelsea v Crystal Palace', 'Nottingham Forest v Brentford', 'Manchester United v Arsenal', 'Leeds United v Everton']
+  1: ['Liverpool v AFC Bournemouth', 'Aston Villa v Newcastle United', 'Brighton & Hove Albion v Fulham', 'Sunderland v West Ham United', 'Tottenham Hotspur v Burnley', 'Wolverhampton Wanderers v Manchester City', 'Chelsea v Crystal Palace', 'Nottingham Forest v Brentford', 'Manchester United v Arsenal', 'Leeds United v Everton'],
+  2: ['West Ham v Chelsea', 'Manchester City v Tottenham Hotspur', 'AFC Bournemouth v Wolverhampton Wanderers', 'Brentford v Aston Villa', 'Burnley v Sunderland', 'Arsenal v Leeds United', 'Crystal Palace v Nottingham Forest', 'Everton v Brighton & Hove Albion', 'Fulham v Manchester United', 'Newcastle United v Liverpool'],
+  3: ['Chelsea v Fulham', 'Manchester United v Burnley', 'Sunderland v Brentford', 'Tottenham Hotspur v AFC Bournemouth', 'Wolverhampton Wanderers v Everton', 'Leeds United v Newcastle United', 'Brighton & Hove Albion v Manchester City', 'Nottingham Forest v West Ham United', 'Liverpool v Arsenal', 'Aston Villa v Crystal Palace'],
+  4: ['Arsenal v Nottingham Forest', 'AFC Bournemouth v Brighton & Hove Albion', 'Crystal Palace v Sunderland', 'Everton v Aston Villa', 'Fulham v Leeds United', 'Newcastle United v Wolverhampton Wanderers', 'West Ham United v Tottenham Hotspur', 'Brentford v Chelsea', 'Burnley v Liverpool', 'Manchester City v Manchester United'],
+  5: ['Liverpool v Everton', 'AFC Bournemouth v Newcastle United', 'Brighton & Hove Albion v Tottenham Hotspur', 'Burnley v Nottingham Forest', 'West Ham United v Crystal Palace', 'Wolverhampton Wanderers v Leeds United', 'Manchester United v Chelsea', 'Fulham v Brentford', 'Sunderland v Aston Villa', 'Arsenal v Manchester City'],
+  6: ['Brentford v Manchester United', 'Aston Villa v Fulham', 'Chelsea v Brighton & Hove Albion', 'Crystal Palace v Liverpool', 'Leeds United v AFC Bournemouth', 'Manchester City v Burnley', 'Nottingham Forest v Sunderland', 'Tottenham Hotspur v Wolverhampton Wanderers', 'Newcastle United v Arsenal', 'Everton v West Ham United'],
+  38: ['Brighton & Hove Albion v Manchester United', 'Burnley v Wolverhampton Wanderers', 'Crystal Palace v Arsenal', 'Fulham v Newcastle United', 'Liverpool v Brentford', 'Manchester City v Aston Villa', 'Nottingham Forest v AFC Bournemouth', 'Sunderland v Chelsea', 'Tottenham Hotspur v Everton', 'West Ham United v Leeds United']
 };
 
 const gameweekSelect = document.getElementById("gameweek");
@@ -190,23 +141,11 @@ gameweekSelect.addEventListener("change", () => {
   matchesDiv.innerHTML = "";
   if(fixtures[gw]){
     fixtures[gw].forEach((match, idx) => {
-      const [home, away] = match.split(' v ');
       const div = document.createElement("div");
       div.classList.add("match");
-      div.innerHTML = `
-        <div class="team">
-          <img src="${teamLogos[home]||''}" alt="${home} Logo">
-          <span>${home}</span>
-        </div>
-        <div class="score-inputs">
-          <input type="number" min="0" placeholder="Home" id="home_${idx}">
-          <input type="number" min="0" placeholder="Away" id="away_${idx}">
-        </div>
-        <div class="team">
-          <img src="${teamLogos[away]||''}" alt="${away} Logo">
-          <span>${away}</span>
-        </div>
-      `;
+      div.innerHTML = `<label>${match}</label>
+                       <input type="number" min="0" placeholder="Home" id="home_${idx}">
+                       <input type="number" min="0" placeholder="Away" id="away_${idx}">`;
       matchesDiv.appendChild(div);
     });
   }
@@ -222,6 +161,7 @@ function submitPredictions(){
     const awayScore = document.getElementById(`away_${idx}`).value;
     data.push({match, homeScore, awayScore});
   });
+
   fetch("https://script.google.com/macros/s/AKfycbwvhWqnRS2tdU9ituc_IUFIId2bIizLO_Of20dtCNS5LaIiBb2JQHx7tagFjgOjlpLe/exec", {
     method: "POST",
     body: JSON.stringify({player, gameweek: gw, predictions: data})
@@ -231,5 +171,6 @@ function submitPredictions(){
   .catch(err => alert("Error submitting predictions"));
 }
 </script>
+
 </body>
 </html>
