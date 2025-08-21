@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "public": true,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "predict.html", "use": "@vercel/static" },
-    { "src": "admin.html", "use": "@vercel/static" }
-  ]
-}
