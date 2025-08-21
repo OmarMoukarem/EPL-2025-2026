@@ -5,66 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premier League Score Predictor</title>
 <style>
-body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
-h1 { text-align: center; margin-bottom: 20px; }
-select, input { margin: 5px 0; padding: 5px; }
-.match { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-.match input { width: 50px; }
-button { padding: 10px 20px; margin-top: 10px; cursor: pointer; }
-.team { display: flex; align-items: center; gap: 5px; }
-.team img { width: 25px; height: 25px; object-fit: contain; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    background: linear-gradient(135deg, #e0f0ff, #f9f9f9);
+    color: #333;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #1e2a78;
+    font-size: 2.2rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  }
+
+  label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: 600;
+    color: #1e2a78;
+  }
+
+  select, input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+
+  select:focus, input:focus {
+    border-color: #1e2a78;
+    outline: none;
+    box-shadow: 0 0 8px rgba(30,42,120,0.3);
+  }
+
+  .match {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+  }
+
+  .match:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  }
+
+  .match input {
+    width: 70px;
+    text-align: center;
+    margin-left: 5px;
+    border-radius: 6px;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #1e2a78;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background: #15206c;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 600px) {
+    .match {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .match input {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 5px;
+    }
+  }
 </style>
 </head>
 <body>
+
 <h1>Premier League Score Predictor</h1>
+
 <label for="player">Select Player:</label>
 <select id="player">
-<option value="">--Select Player--</option>
-<option>Omar</option>
-<option>Robbie</option>
-<option>Khalil</option>
-<option>Idriss</option>
-<option>Aboudi</option>
-<option>Masri</option>
-<option>Hafez</option>
-<option>Joseph</option>
-<option>Rizk</option>
-<option>Dani</option>
+  <option value="">--Select Player--</option>
+  <option>Omar</option>
+  <option>Robbie</option>
+  <option>Khalil</option>
+  <option>Idriss</option>
+  <option>Aboudi</option>
+  <option>Masri</option>
+  <option>Hafez</option>
+  <option>Joseph</option>
+  <option>Rizk</option>
+  <option>Dani</option>
 </select>
-<br>
+
 <label for="gameweek">Select Gameweek:</label>
 <select id="gameweek">
-<option value="">--Select Gameweek--</option>
-<option value="1">Gameweek 1</option><option value="2">Gameweek 2</option><option value="3">Gameweek 3</option><option value="4">Gameweek 4</option><option value="5">Gameweek 5</option><option value="6">Gameweek 6</option><option value="7">Gameweek 7</option><option value="8">Gameweek 8</option><option value="9">Gameweek 9</option><option value="10">Gameweek 10</option><option value="11">Gameweek 11</option><option value="12">Gameweek 12</option><option value="13">Gameweek 13</option><option value="14">Gameweek 14</option><option value="15">Gameweek 15</option><option value="16">Gameweek 16</option><option value="17">Gameweek 17</option><option value="18">Gameweek 18</option><option value="19">Gameweek 19</option><option value="20">Gameweek 20</option><option value="21">Gameweek 21</option><option value="22">Gameweek 22</option><option value="23">Gameweek 23</option><option value="24">Gameweek 24</option><option value="25">Gameweek 25</option><option value="26">Gameweek 26</option><option value="27">Gameweek 27</option><option value="28">Gameweek 28</option><option value="29">Gameweek 29</option><option value="30">Gameweek 30</option><option value="31">Gameweek 31</option><option value="32">Gameweek 32</option><option value="33">Gameweek 33</option><option value="34">Gameweek 34</option><option value="35">Gameweek 35</option><option value="36">Gameweek 36</option><option value="37">Gameweek 37</option><option value="38">Gameweek 38</option>
+  <option value="">--Select Gameweek--</option>
+  <script>
+    for(let i=1;i<=38;i++){
+      document.write(`<option value="${i}">Gameweek ${i}</option>`);
+    }
+  </script>
 </select>
+
 <div id="matches"></div>
+
 <button onclick="submitPredictions()">Submit Predictions</button>
 
 <script>
-const teamLogos = {
-  'Liverpool':'https://crests.football-data.org/64/LIV.png',
-  'Manchester United':'https://crests.football-data.org/66/MUN.png',
-  'Manchester City':'https://crests.football-data.org/65/MCI.png',
-  'Chelsea':'https://crests.football-data.org/61/CHE.png',
-  'Arsenal':'https://crests.football-data.org/57/ARS.png',
-  'Tottenham Hotspur':'https://crests.football-data.org/73/TOT.png',
-  'Everton':'https://crests.football-data.org/62/EVE.png',
-  'Leeds United':'https://crests.football-data.org/341/LEEDS.png',
-  'Aston Villa':'https://crests.football-data.org/58/AVL.png',
-  'Newcastle United':'https://crests.football-data.org/67/NEW.png',
-  'Brighton & Hove Albion':'https://crests.football-data.org/397/BHA.png',
-  'Crystal Palace':'https://crests.football-data.org/354/CRY.png',
-  'West Ham United':'https://crests.football-data.org/563/WHA.png',
-  'Wolverhampton Wanderers':'https://crests.football-data.org/76/WOL.png',
-  'Brentford':'https://crests.football-data.org/397/BRN.png',
-  'Fulham':'https://crests.football-data.org/63/FUL.png',
-  'Nottingham Forest':'https://crests.football-data.org/75/NGF.png',
-  'Sunderland':'https://crests.football-data.org/71/SUN.png',
-  'Burnley':'https://crests.football-data.org/328/BUR.png',
-  'AFC Bournemouth':'https://crests.football-data.org/104/BOU.png'
+const fixtures = {
+  1: ['Liverpool v AFC Bournemouth', 'Aston Villa v Newcastle United', 'Brighton & Hove Albion v Fulham', 'Sunderland v West Ham United', 'Tottenham Hotspur v Burnley', 'Wolverhampton Wanderers v Manchester City', 'Chelsea v Crystal Palace', 'Nottingham Forest v Brentford', 'Manchester United v Arsenal', 'Leeds United v Everton'],
+  2: ['West Ham v Chelsea', 'Manchester City v Tottenham Hotspur', 'AFC Bournemouth v Wolverhampton Wanderers', 'Brentford v Aston Villa', 'Burnley v Sunderland', 'Arsenal v Leeds United', 'Crystal Palace v Nottingham Forest', 'Everton v Brighton & Hove Albion', 'Fulham v Manchester United', 'Newcastle United v Liverpool'],
+  3: ['Chelsea v Fulham', 'Manchester United v Burnley', 'Sunderland v Brentford', 'Tottenham Hotspur v AFC Bournemouth', 'Wolverhampton Wanderers v Everton', 'Leeds United v Newcastle United', 'Brighton & Hove Albion v Manchester City', 'Nottingham Forest v West Ham United', 'Liverpool v Arsenal', 'Aston Villa v Crystal Palace'],
+  4: ['Arsenal v Nottingham Forest', 'AFC Bournemouth v Brighton & Hove Albion', 'Crystal Palace v Sunderland', 'Everton v Aston Villa', 'Fulham v Leeds United', 'Newcastle United v Wolverhampton Wanderers', 'West Ham United v Tottenham Hotspur', 'Brentford v Chelsea', 'Burnley v Liverpool', 'Manchester City v Manchester United'],
+  5: ['Liverpool v Everton', 'AFC Bournemouth v Newcastle United', 'Brighton & Hove Albion v Tottenham Hotspur', 'Burnley v Nottingham Forest', 'West Ham United v Crystal Palace', 'Wolverhampton Wanderers v Leeds United', 'Manchester United v Chelsea', 'Fulham v Brentford', 'Sunderland v Aston Villa', 'Arsenal v Manchester City'],
+  6: ['Brentford v Manchester United', 'Aston Villa v Fulham', 'Chelsea v Brighton & Hove Albion', 'Crystal Palace v Liverpool', 'Leeds United v AFC Bournemouth', 'Manchester City v Burnley', 'Nottingham Forest v Sunderland', 'Tottenham Hotspur v Wolverhampton Wanderers', 'Newcastle United v Arsenal', 'Everton v West Ham United'],
+  38: ['Brighton & Hove Albion v Manchester United', 'Burnley v Wolverhampton Wanderers', 'Crystal Palace v Arsenal', 'Fulham v Newcastle United', 'Liverpool v Brentford', 'Manchester City v Aston Villa', 'Nottingham Forest v AFC Bournemouth', 'Sunderland v Chelsea', 'Tottenham Hotspur v Everton', 'West Ham United v Leeds United']
 };
-
-const fixtures = {1: ['Liverpool v AFC Bournemouth', 'Aston Villa v Newcastle United', 'Brighton & Hove Albion v Fulham', 'Sunderland v West Ham United', 'Tottenham Hotspur v Burnley', 'Wolverhampton Wanderers v Manchester City', 'Chelsea v Crystal Palace', 'Nottingham Forest v Brentford', 'Manchester United v Arsenal', 'Leeds United v Everton'], 2: ['West Ham v Chelsea', 'Manchester City v Tottenham Hotspur', 'AFC Bournemouth v Wolverhampton Wanderers', 'Brentford v Aston Villa', 'Burnley v Sunderland', 'Arsenal v Leeds United', 'Crystal Palace v Nottingham Forest', 'Everton v Brighton & Hove Albion', 'Fulham v Manchester United', 'Newcastle United v Liverpool'], 3: ['Chelsea v Fulham', 'Manchester United v Burnley', 'Sunderland v Brentford', 'Tottenham Hotspur v AFC Bournemouth', 'Wolverhampton Wanderers v Everton', 'Leeds United v Newcastle United', 'Brighton & Hove Albion v Manchester City', 'Nottingham Forest v West Ham United', 'Liverpool v Arsenal', 'Aston Villa v Crystal Palace'], 4: ['Arsenal v Nottingham Forest', 'AFC Bournemouth v Brighton & Hove Albion', 'Crystal Palace v Sunderland', 'Everton v Aston Villa', 'Fulham v Leeds United', 'Newcastle United v Wolverhampton Wanderers', 'West Ham United v Tottenham Hotspur', 'Brentford v Chelsea', 'Burnley v Liverpool', 'Manchester City v Manchester United'], 5: ['Liverpool v Everton', 'AFC Bournemouth v Newcastle United', 'Brighton & Hove Albion v Tottenham Hotspur', 'Burnley v Nottingham Forest', 'West Ham United v Crystal Palace', 'Wolverhampton Wanderers v Leeds United', 'Manchester United v Chelsea', 'Fulham v Brentford', 'Sunderland v Aston Villa', 'Arsenal v Manchester City'], 6: ['Brentford v Manchester United', 'Aston Villa v Fulham', 'Chelsea v Brighton & Hove Albion', 'Crystal Palace v Liverpool', 'Leeds United v AFC Bournemouth', 'Manchester City v Burnley', 'Nottingham Forest v Sunderland', 'Tottenham Hotspur v Wolverhampton Wanderers', 'Newcastle United v Arsenal', 'Everton v West Ham United'], 38: ['Brighton & Hove Albion v Manchester United', 'Burnley v Wolverhampton Wanderers', 'Crystal Palace v Arsenal', 'Fulham v Newcastle United', 'Liverpool v Brentford', 'Manchester City v Aston Villa', 'Nottingham Forest v AFC Bournemouth', 'Sunderland v Chelsea', 'Tottenham Hotspur v Everton', 'West Ham United v Leeds United']};
 
 const gameweekSelect = document.getElementById("gameweek");
 const matchesDiv = document.getElementById("matches");
@@ -74,16 +152,11 @@ gameweekSelect.addEventListener("change", () => {
   matchesDiv.innerHTML = "";
   if(fixtures[gw]){
     fixtures[gw].forEach((match, idx) => {
-      const teams = match.split(' v ');
-      const home = teams[0].trim();
-      const away = teams[1].trim();
       const div = document.createElement("div");
       div.classList.add("match");
-      div.innerHTML =
-        '<div class="team"><img src="'+(teamLogos[home]||'')+'" alt="'+home+' logo">'+home+'</div>'+
-        '<input type="number" min="0" placeholder="Home" id="home_'+idx+'">'+
-        '<input type="number" min="0" placeholder="Away" id="away_'+idx+'">'+
-        '<div class="team"><img src="'+(teamLogos[away]||'')+'" alt="'+away+' logo">'+away+'</div>';
+      div.innerHTML = `<label>${match}</label>
+                       <input type="number" min="0" placeholder="Home" id="home_${idx}">
+                       <input type="number" min="0" placeholder="Away" id="away_${idx}">`;
       matchesDiv.appendChild(div);
     });
   }
@@ -95,10 +168,11 @@ function submitPredictions(){
   if(!player || !gw){ alert("Select player and gameweek"); return; }
   const data = [];
   fixtures[gw].forEach((match, idx) => {
-    const homeScore = document.getElementById('home_'+idx).value;
-    const awayScore = document.getElementById('away_'+idx).value;
+    const homeScore = document.getElementById(`home_${idx}`).value;
+    const awayScore = document.getElementById(`away_${idx}`).value;
     data.push({match, homeScore, awayScore});
   });
+
   fetch("https://script.google.com/macros/s/AKfycbwvhWqnRS2tdU9ituc_IUFIId2bIizLO_Of20dtCNS5LaIiBb2JQHx7tagFjgOjlpLe/exec", {
     method: "POST",
     body: JSON.stringify({player, gameweek: gw, predictions: data})
@@ -108,5 +182,6 @@ function submitPredictions(){
   .catch(err => alert("Error submitting predictions"));
 }
 </script>
+
 </body>
 </html>
