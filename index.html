@@ -114,7 +114,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   });
 
   try {
-    const response = await fetch('YOUR_SCRIPT_DEPLOY_URL_HERE', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbzNJ8JZPFGyOT6S7NdC3UQEktMpJNqSN-1XdKmYNqcZjD9T4ypQHWfI-TuLqQsM8Qom/exec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player, gameweek: gw, predictions })
@@ -134,4 +134,5 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
 </script>
 
 </body>
+
 </html>
