@@ -64,19 +64,23 @@
 <label for="gameweek">Select Gameweek:</label>
 <select id="gameweek">
   <option value="">--Select Gameweek--</option>
-  <script>for(let i=1;i<=38;i++){document.write(`<option value="${i}">Gameweek ${i}</option>`);}</script>
+  <script>
+    for(let i=1; i<=38; i++){
+      document.write(`<option value="${i}">Gameweek ${i}</option>`);
+    }
+  </script>
 </select>
 
 <div id="matches"></div>
-<button id="submitBtn">Submit Predictions</button>
+<button onclick="submitPredictions()">Submit Predictions</button>
 
 <script>
 const fixtures = {
   1: ['Liverpool v AFC Bournemouth','Aston Villa v Newcastle United','Brighton & Hove Albion v Fulham','Sunderland v West Ham United','Tottenham Hotspur v Burnley','Wolverhampton Wanderers v Manchester City','Chelsea v Crystal Palace','Nottingham Forest v Brentford','Manchester United v Arsenal','Leeds United v Everton'],
   2: ['West Ham United v Chelsea','Manchester City v Tottenham Hotspur','AFC Bournemouth v Wolves','Brentford v Aston Villa','Burnley v Sunderland','Arsenal v Leeds United','Crystal Palace v Nottingham Forest','Everton v Brighton & Hove Albion','Fulham v Manchester United','Newcastle United v Liverpool'],
   3: ['Chelsea v Fulham','Manchester United v Burnley','Sunderland v Brentford','Tottenham Hotspur v AFC Bournemouth','Wolves v Everton','Leeds United v Newcastle United','Brighton & Hove Albion v Manchester City','Nottingham Forest v West Ham United','Liverpool v Arsenal','Aston Villa v Crystal Palace'],
-  4: ['Arsenal v Nottingham Forest','AFC Bournemouth v Brighton & Hove Albion','Crystal Palace v Sunderland','Everton v Aston Villa','Fulham v Leeds United','Newcastle United v Wolves','West Ham United v Tottenham Hotspur','Brentford v Chelsea','Burnley v Liverpool','Manchester City v Manchester United'],
-  // Add 5-38 if needed
+  4: ['Arsenal v Nottingham Forest','AFC Bournemouth v Brighton & Hove Albion','Crystal Palace v Sunderland','Everton v Aston Villa','Fulham v Leeds United','Newcastle United v Wolves','West Ham United v Tottenham Hotspur','Brentford v Chelsea','Burnley v Liverpool','Manchester City v Manchester United']
+  // Add 5-38 similarly
 };
 
 const gameweekSelect = document.getElementById('gameweek');
@@ -99,7 +103,7 @@ gameweekSelect.addEventListener('change', () => {
   }
 });
 
-document.getElementById('submitBtn').addEventListener('click', async () => {
+function submitPredictions() {
   const player = document.getElementById('player').value;
   const gw = gameweekSelect.value;
 
@@ -108,47 +112,30 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     return;
   }
 
-  const predictions = fixtures[gw].map((match, idx) => {
-    const homeVal = document.getElementById(`home_${idx}`).value;
-    const awayVal = document.getElementById(`away_${idx}`).value;
-    return {
-      match,
-      homeScore: homeVal !== '' ? parseInt(homeVal, 10) : null,
-      awayScore: awayVal !== '' ? parseInt(awayVal, 10) : null
-    };
-  }).filter(p => p.homeScore !== null && p.awayScore !== null);
+  const predictions = fixtures[gw].map((match, idx) => ({
+    match,
+    homeScore: document.getElementById(`home_${idx}`).value,
+    awayScore: document.getElementById(`away_${idx}`).value
+  }));
 
-  if (predictions.length === 0) {
-    alert('Please enter at least one match score.');
-    return;
-  }
-
-  const payload = { player, gameweek: gw, predictions };
-  console.log("Payload to send:", payload);
-
-  try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxdKB2IFqExl57h8VgAuoOOIM7SoZ5tBC0ThXiHOT4uSxSAD3WKWH7B8pUywdg56hsL/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    console.log("Raw response:", response);
-
-    const result = await response.json();
-    console.log("Parsed result:", result);
-
+  fetch('https://script.google.com/macros/s/AKfycbzNJ8JZPFGyOT6S7NdC3UQEktMpJNqSN-1XdKmYNqcZjD9T4ypQHWfI-TuLqQsM8Qom/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ player, gameweek: gw, predictions })
+  })
+  .then(response => response.json())
+  .then(result => {
     if (result.status === 'success') {
       alert('Predictions submitted successfully!');
-      matchesDiv.innerHTML = '';
     } else {
-      alert('Error: ' + (result.message || 'Server error'));
+      alert('Error: ' + (result.message || 'Failure from server'));
     }
-  } catch (err) {
-    console.error("Fetch error:", err);
-    alert('Failed to submit predictions. Check console for details.');
-  }
-});
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Error submitting predictions. Please try again.');
+  });
+}
 </script>
 
 </body>
