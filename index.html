@@ -88,7 +88,7 @@ function submitPredictions(){
     awayScore: document.getElementById(`away_${idx}`).value
   }));
 
-  fetch('https://script.google.com/macros/s/AKfycbw6ag2H1ZVphrbtIu2NTGaz25SA8EUdv9BO7dw99qdAVXEL8s84HotZ6OdcSVzegAMR/exec', {
+  fetch('https://script.google.com/macros/s/AKfycby5Ugjey751bUewMy3AeQ_v5qAudy4f488qctd7IDeXHb1FWH6eKadVQchDM0nznD3BHg/exec', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({player, gameweek:gw, predictions})
